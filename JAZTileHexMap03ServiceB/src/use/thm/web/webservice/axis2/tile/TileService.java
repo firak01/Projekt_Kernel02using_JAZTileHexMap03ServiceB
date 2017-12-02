@@ -16,8 +16,6 @@ import org.hibernate.internal.SessionFactoryImpl;
 
 import basic.zBasic.ExceptionZZZ;
 import basic.zKernel.KernelZZZ;
-import tryout.zBasic.persistence.webservice.TileDefaulttextPojo;
-import tryout.zBasic.persistence.webservice.TroopArmyPojo;
 import tryout.zBasic.persistence.webservice.TryoutSessionFactoryCreation;
 import use.thm.persistence.dao.TileDefaulttextDao;
 import use.thm.persistence.dao.TroopArmyDao;
@@ -25,6 +23,8 @@ import use.thm.persistence.hibernate.HibernateContextProviderSingletonTHM;
 import use.thm.persistence.model.Key;
 import use.thm.persistence.model.TileDefaulttext;
 import use.thm.persistence.model.TroopArmy;
+import use.thm.web.webservice.axis2.pojo.TileDefaulttextPojo;
+import use.thm.web.webservice.axis2.pojo.TroopArmyPojo;
 
 public class TileService{
 	public String getVersion(){
@@ -177,6 +177,71 @@ public class TileService{
 		}
 		return listReturn;	
 	}
+	
+	/* Hier wird dann erstmalig eine eigens dafür erstellte HQL Abfrage ausgeführt und das Ergebnis soll zurückgeliefert werden.
+	 * MERKE: Der hier vergebenen Variablennamen ist dann der Name der Methode in der Input-Klasse des Webservice. Bei der Entwicklung des WebServiceClients.
+	 *        z.B. sMap ==>  getTroopArmiesAll10.setSMap("EINS"); */
+	public List<TroopArmyPojo> getTroopArmiesAll(String sMap){ //TODO: Irgendeine Sortierung als Parameter vorgeben...{
+		List<TroopArmyPojo> listReturn = null;	
+		try {
+			//HOLE DIE SESSIONFACTORY PER JNDI:
+			//Merke: DAS FUNKTIONIERT NUR, WENN DIE ANWENDUNG IN EINEM SERVER (z.B. Tomcat läuft).
+			
+			KernelZZZ objKernel = new KernelZZZ(); //Merke: Die Service Klasse selbst kann wohl nicht das KernelObjekt extenden!			
+			HibernateContextProviderSingletonTHM objContextHibernate = HibernateContextProviderSingletonTHM.getInstance(objKernel);					
+			objContextHibernate.getConfiguration().setProperty("hibernate.hbm2ddl.auto", "update");  //! Jetzt erst wird jede Tabelle über den Anwendungsstart hinaus gespeichert UND auch wiedergeholt.				
+			
+			//############################
+			//MERKE: DAS IST DER WEG wei bisher die SessionFactory direkt in einer Standalone J2SE Anwendung geholt wird
+			//ServiceRegistry sr = new ServiceRegistryBuilder().applySettings(cfg.getProperties()).buildServiceRegistry();		    
+		    //SessionFactory sf = cfg.buildSessionFactory(sr);
+			//################################
+		
+			//xxxx Da wird mit normalen JDBC Datenbanenk als DataSource gearbeitet. Das ist mit Hibernate so nicht möglich
+			//holds config elements
+			//DataSource ds = (DataSource)ctx.lookup("java:comp/env/jdbc/yourdb");
+			//Connection conn = ds.getConnection();
+										
+			//### Ansatz Session-Factory über die Utility Funktion zu holen, die dann in der Hibernate Konfiguration nachsieht.
+			//1. Versuch: In der Hibernate Configuration definiert
+			//    Fehler: SessionFactory creation failed! javax.naming.NoInitialContextException: Need to specify class name in environment or system property, or as an applet parameter, or in an application resource file:  java.naming.factory.initial
+			
+			//2. Versuch: In der Hibernate Configuration Erstellung per Java definiert
+			//Die hier genannte SessionFactory muss tatsächlich als Klasse an der Stelle existieren.
+										
+			//3. Versuch:
+			Context jndiContext = (Context) new InitialContext();
+			SessionFactory sf = (SessionFactory) jndiContext.lookup("java:comp/env/jdbc/ServicePortal");
+						
+			TroopArmyDao daoTroop = new TroopArmyDao(objContextHibernate);
+			List<TroopArmy>listTroopArmy = daoTroop.searchTroopArmiesAll(sMap);			
+			if(listTroopArmy.size()>=1){
+				System.out.println("Es gibt auf der Karte '" + sMap + " platzierte Armeen: " + listTroopArmy.size());				
+				listReturn = new ArrayList<TroopArmyPojo>();
+			}
+			for(TroopArmy objTroop : listTroopArmy){
+				TroopArmyPojo objPojo = new TroopArmyPojo();
+				objPojo.setUniquename(objTroop.getUniquename());
+				objPojo.setPlayer(new Integer(objTroop.getPlayer()));
+				objPojo.setType(objTroop.getTroopType());
+				
+				objPojo.setMapAlias(sMap);
+							
+				objPojo.setMapX(new Integer(objTroop.getMapX()));
+				objPojo.setMapY(new Integer(objTroop.getMapY()));
+				
+				listReturn.add(objPojo);
+			}
+		} catch (NamingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (ExceptionZZZ e){
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return listReturn;	
+	}
+	
 	
 	/* Hier wird per DAO der Defaulttext für eine Army geholt. Dabei wird der (momentan noch) der Thiskey direkt angegeben.
 	 * TODO GOON 20171115: Das soll eigentlich über eine noch zu erstellende Armeetyp - Tabelle passieren, in welcher der thiskey abgelegt ist.
