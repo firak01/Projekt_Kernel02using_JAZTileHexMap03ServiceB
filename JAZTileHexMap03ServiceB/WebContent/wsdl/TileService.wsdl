@@ -1,0 +1,453 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wsdl:definitions targetNamespace="http://tile.axis2.webservice.web.thm.use" xmlns:apachesoap="http://xml.apache.org/xml-soap" xmlns:impl="http://tile.axis2.webservice.web.thm.use" xmlns:intf="http://tile.axis2.webservice.web.thm.use" xmlns:tns1="http://pojo.axis2.webservice.web.thm.use" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:wsdlsoap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+<!--WSDL created by Apache Axis version: 1.4
+Built on Apr 22, 2006 (06:55:48 PDT)-->
+ <wsdl:types>
+  <schema elementFormDefault="qualified" targetNamespace="http://tile.axis2.webservice.web.thm.use" xmlns="http://www.w3.org/2001/XMLSchema">
+   <import namespace="http://pojo.axis2.webservice.web.thm.use"/>
+   <element name="getVersion">
+    <complexType/>
+   </element>
+   <element name="getVersionResponse">
+    <complexType>
+     <sequence>
+      <element name="getVersionReturn" type="xsd:string"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="getProofJndiResourceUsedAvailable">
+    <complexType/>
+   </element>
+   <element name="getProofJndiResourceUsedAvailableResponse">
+    <complexType>
+     <sequence>
+      <element name="getProofJndiResourceUsedAvailableReturn" type="xsd:string"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="getTileDefaulttextByThiskey">
+    <complexType>
+     <sequence>
+      <element name="lngThiskey" type="xsd:long"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="getTileDefaulttextByThiskeyResponse">
+    <complexType>
+     <sequence>
+      <element name="getTileDefaulttextByThiskeyReturn" type="tns1:TileDefaulttextPojo"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="getTroopArmiesAll">
+    <complexType>
+     <sequence>
+      <element name="sMap" type="xsd:string"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="getTroopArmiesAllResponse">
+    <complexType>
+     <sequence>
+      <element name="getTroopArmiesAllReturn" type="impl:ArrayOf_xsd_anyType"/>
+     </sequence>
+    </complexType>
+   </element>
+   <complexType name="ArrayOf_xsd_anyType">
+    <sequence>
+     <element maxOccurs="unbounded" minOccurs="0" name="item" type="xsd:anyType"/>
+    </sequence>
+   </complexType>
+   <element name="getTroopArmiesByHexCell">
+    <complexType>
+     <sequence>
+      <element name="sMap" type="xsd:string"/>
+      <element name="sX" type="xsd:string"/>
+      <element name="sY" type="xsd:string"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="getTroopArmiesByHexCellResponse">
+    <complexType>
+     <sequence>
+      <element name="getTroopArmiesByHexCellReturn" type="impl:ArrayOf_xsd_anyType"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="getTroopArmyCount">
+    <complexType/>
+   </element>
+   <element name="getTroopArmyCountResponse">
+    <complexType>
+     <sequence>
+      <element name="getTroopArmyCountReturn" type="xsd:int"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="getNow">
+    <complexType/>
+   </element>
+   <element name="getNowResponse">
+    <complexType>
+     <sequence>
+      <element name="getNowReturn" type="xsd:string"/>
+     </sequence>
+    </complexType>
+   </element>
+  </schema>
+  <schema elementFormDefault="qualified" targetNamespace="http://pojo.axis2.webservice.web.thm.use" xmlns="http://www.w3.org/2001/XMLSchema">
+   <import namespace="http://tile.axis2.webservice.web.thm.use"/>
+   <complexType name="TileDefaulttextPojo">
+    <sequence>
+     <element name="descriptiontext" nillable="true" type="xsd:string"/>
+     <element name="longtext" nillable="true" type="xsd:string"/>
+     <element name="shorttext" nillable="true" type="xsd:string"/>
+     <element name="thiskey" nillable="true" type="xsd:long"/>
+    </sequence>
+   </complexType>
+  </schema>
+ </wsdl:types>
+
+   <wsdl:message name="getVersionResponse">
+
+      <wsdl:part element="impl:getVersionResponse" name="parameters">
+
+      </wsdl:part>
+
+   </wsdl:message>
+
+   <wsdl:message name="getTroopArmiesAllRequest">
+
+      <wsdl:part element="impl:getTroopArmiesAll" name="parameters">
+
+      </wsdl:part>
+
+   </wsdl:message>
+
+   <wsdl:message name="getVersionRequest">
+
+      <wsdl:part element="impl:getVersion" name="parameters">
+
+      </wsdl:part>
+
+   </wsdl:message>
+
+   <wsdl:message name="getNowResponse">
+
+      <wsdl:part element="impl:getNowResponse" name="parameters">
+
+      </wsdl:part>
+
+   </wsdl:message>
+
+   <wsdl:message name="getTileDefaulttextByThiskeyResponse">
+
+      <wsdl:part element="impl:getTileDefaulttextByThiskeyResponse" name="parameters">
+
+      </wsdl:part>
+
+   </wsdl:message>
+
+   <wsdl:message name="getNowRequest">
+
+      <wsdl:part element="impl:getNow" name="parameters">
+
+      </wsdl:part>
+
+   </wsdl:message>
+
+   <wsdl:message name="getTroopArmyCountRequest">
+
+      <wsdl:part element="impl:getTroopArmyCount" name="parameters">
+
+      </wsdl:part>
+
+   </wsdl:message>
+
+   <wsdl:message name="getTroopArmiesByHexCellRequest">
+
+      <wsdl:part element="impl:getTroopArmiesByHexCell" name="parameters">
+
+      </wsdl:part>
+
+   </wsdl:message>
+
+   <wsdl:message name="getProofJndiResourceUsedAvailableResponse">
+
+      <wsdl:part element="impl:getProofJndiResourceUsedAvailableResponse" name="parameters">
+
+      </wsdl:part>
+
+   </wsdl:message>
+
+   <wsdl:message name="getTileDefaulttextByThiskeyRequest">
+
+      <wsdl:part element="impl:getTileDefaulttextByThiskey" name="parameters">
+
+      </wsdl:part>
+
+   </wsdl:message>
+
+   <wsdl:message name="getTroopArmiesByHexCellResponse">
+
+      <wsdl:part element="impl:getTroopArmiesByHexCellResponse" name="parameters">
+
+      </wsdl:part>
+
+   </wsdl:message>
+
+   <wsdl:message name="getTroopArmiesAllResponse">
+
+      <wsdl:part element="impl:getTroopArmiesAllResponse" name="parameters">
+
+      </wsdl:part>
+
+   </wsdl:message>
+
+   <wsdl:message name="getTroopArmyCountResponse">
+
+      <wsdl:part element="impl:getTroopArmyCountResponse" name="parameters">
+
+      </wsdl:part>
+
+   </wsdl:message>
+
+   <wsdl:message name="getProofJndiResourceUsedAvailableRequest">
+
+      <wsdl:part element="impl:getProofJndiResourceUsedAvailable" name="parameters">
+
+      </wsdl:part>
+
+   </wsdl:message>
+
+   <wsdl:portType name="TileService">
+
+      <wsdl:operation name="getVersion">
+
+         <wsdl:input message="impl:getVersionRequest" name="getVersionRequest">
+
+       </wsdl:input>
+
+         <wsdl:output message="impl:getVersionResponse" name="getVersionResponse">
+
+       </wsdl:output>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="getProofJndiResourceUsedAvailable">
+
+         <wsdl:input message="impl:getProofJndiResourceUsedAvailableRequest" name="getProofJndiResourceUsedAvailableRequest">
+
+       </wsdl:input>
+
+         <wsdl:output message="impl:getProofJndiResourceUsedAvailableResponse" name="getProofJndiResourceUsedAvailableResponse">
+
+       </wsdl:output>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="getTileDefaulttextByThiskey">
+
+         <wsdl:input message="impl:getTileDefaulttextByThiskeyRequest" name="getTileDefaulttextByThiskeyRequest">
+
+       </wsdl:input>
+
+         <wsdl:output message="impl:getTileDefaulttextByThiskeyResponse" name="getTileDefaulttextByThiskeyResponse">
+
+       </wsdl:output>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="getTroopArmiesAll">
+
+         <wsdl:input message="impl:getTroopArmiesAllRequest" name="getTroopArmiesAllRequest">
+
+       </wsdl:input>
+
+         <wsdl:output message="impl:getTroopArmiesAllResponse" name="getTroopArmiesAllResponse">
+
+       </wsdl:output>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="getTroopArmiesByHexCell">
+
+         <wsdl:input message="impl:getTroopArmiesByHexCellRequest" name="getTroopArmiesByHexCellRequest">
+
+       </wsdl:input>
+
+         <wsdl:output message="impl:getTroopArmiesByHexCellResponse" name="getTroopArmiesByHexCellResponse">
+
+       </wsdl:output>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="getTroopArmyCount">
+
+         <wsdl:input message="impl:getTroopArmyCountRequest" name="getTroopArmyCountRequest">
+
+       </wsdl:input>
+
+         <wsdl:output message="impl:getTroopArmyCountResponse" name="getTroopArmyCountResponse">
+
+       </wsdl:output>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="getNow">
+
+         <wsdl:input message="impl:getNowRequest" name="getNowRequest">
+
+       </wsdl:input>
+
+         <wsdl:output message="impl:getNowResponse" name="getNowResponse">
+
+       </wsdl:output>
+
+      </wsdl:operation>
+
+   </wsdl:portType>
+
+   <wsdl:binding name="TileServiceSoapBinding" type="impl:TileService">
+
+      <wsdlsoap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+
+      <wsdl:operation name="getVersion">
+
+         <wsdlsoap:operation soapAction=""/>
+
+         <wsdl:input name="getVersionRequest">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:input>
+
+         <wsdl:output name="getVersionResponse">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:output>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="getProofJndiResourceUsedAvailable">
+
+         <wsdlsoap:operation soapAction=""/>
+
+         <wsdl:input name="getProofJndiResourceUsedAvailableRequest">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:input>
+
+         <wsdl:output name="getProofJndiResourceUsedAvailableResponse">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:output>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="getTileDefaulttextByThiskey">
+
+         <wsdlsoap:operation soapAction=""/>
+
+         <wsdl:input name="getTileDefaulttextByThiskeyRequest">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:input>
+
+         <wsdl:output name="getTileDefaulttextByThiskeyResponse">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:output>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="getTroopArmiesAll">
+
+         <wsdlsoap:operation soapAction=""/>
+
+         <wsdl:input name="getTroopArmiesAllRequest">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:input>
+
+         <wsdl:output name="getTroopArmiesAllResponse">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:output>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="getTroopArmiesByHexCell">
+
+         <wsdlsoap:operation soapAction=""/>
+
+         <wsdl:input name="getTroopArmiesByHexCellRequest">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:input>
+
+         <wsdl:output name="getTroopArmiesByHexCellResponse">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:output>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="getTroopArmyCount">
+
+         <wsdlsoap:operation soapAction=""/>
+
+         <wsdl:input name="getTroopArmyCountRequest">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:input>
+
+         <wsdl:output name="getTroopArmyCountResponse">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:output>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="getNow">
+
+         <wsdlsoap:operation soapAction=""/>
+
+         <wsdl:input name="getNowRequest">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:input>
+
+         <wsdl:output name="getNowResponse">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:output>
+
+      </wsdl:operation>
+
+   </wsdl:binding>
+
+   <wsdl:service name="TileServiceService">
+
+      <wsdl:port binding="impl:TileServiceSoapBinding" name="TileService">
+
+         <wsdlsoap:address location="http://localhost:8080/JAZTileHexMap03ServiceB/services/TileService"/>
+
+      </wsdl:port>
+
+   </wsdl:service>
+
+</wsdl:definitions>

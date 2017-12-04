@@ -1,0 +1,172 @@
+<!-- Use this file to deploy some handlers/chains and services      -->
+<!-- Two ways to do this:                                           -->
+<!--   java org.apache.axis.client.AdminClient deploy.wsdd          -->
+<!--      after the axis server is running                          -->
+<!-- or                                                             -->
+<!--   java org.apache.axis.utils.Admin client|server deploy.wsdd   -->
+<!--      from the same directory that the Axis engine runs         -->
+
+<deployment
+    xmlns="http://xml.apache.org/axis/wsdd/"
+    xmlns:java="http://xml.apache.org/axis/wsdd/providers/java">
+
+  <!-- Services from TileServiceService WSDL service -->
+
+  <service name="TileService" provider="java:RPC" style="wrapped" use="literal">
+      <parameter name="wsdlTargetNamespace" value="http://tile.axis2.webservice.web.thm.use"/>
+      <parameter name="wsdlServiceElement" value="TileServiceService"/>
+      <parameter name="schemaQualified" value="http://pojo.axis2.webservice.web.thm.use,http://tile.axis2.webservice.web.thm.use"/>
+      <parameter name="wsdlServicePort" value="TileService"/>
+      <parameter name="className" value="use.thm.web.webservice.axis2.tile.TileServiceSoapBindingImpl"/>
+      <parameter name="wsdlPortType" value="TileService"/>
+      <parameter name="typeMappingVersion" value="1.2"/>
+      <operation name="getVersion" qname="operNS:getVersion" xmlns:operNS="http://tile.axis2.webservice.web.thm.use" returnQName="retNS:getVersionReturn" xmlns:retNS="http://tile.axis2.webservice.web.thm.use" returnType="rtns:string" xmlns:rtns="http://www.w3.org/2001/XMLSchema" soapAction="" >
+      </operation>
+      <operation name="getProofJndiResourceUsedAvailable" qname="operNS:getProofJndiResourceUsedAvailable" xmlns:operNS="http://tile.axis2.webservice.web.thm.use" returnQName="retNS:getProofJndiResourceUsedAvailableReturn" xmlns:retNS="http://tile.axis2.webservice.web.thm.use" returnType="rtns:string" xmlns:rtns="http://www.w3.org/2001/XMLSchema" soapAction="" >
+      </operation>
+      <operation name="getTileDefaulttextByThiskey" qname="operNS:getTileDefaulttextByThiskey" xmlns:operNS="http://tile.axis2.webservice.web.thm.use" returnQName="retNS:getTileDefaulttextByThiskeyReturn" xmlns:retNS="http://tile.axis2.webservice.web.thm.use" returnType="rtns:TileDefaulttextPojo" xmlns:rtns="http://pojo.axis2.webservice.web.thm.use" soapAction="" >
+        <parameter qname="pns:lngThiskey" xmlns:pns="http://tile.axis2.webservice.web.thm.use" type="tns:long" xmlns:tns="http://www.w3.org/2001/XMLSchema"/>
+      </operation>
+      <operation name="getTroopArmiesAll" qname="operNS:getTroopArmiesAll" xmlns:operNS="http://tile.axis2.webservice.web.thm.use" returnQName="retNS:getTroopArmiesAllReturn" xmlns:retNS="http://tile.axis2.webservice.web.thm.use" returnType="rtns:ArrayOf_xsd_anyType" xmlns:rtns="http://tile.axis2.webservice.web.thm.use" returnItemQName="tns:item" xmlns:tns="http://tile.axis2.webservice.web.thm.use" soapAction="" >
+        <parameter qname="pns:sMap" xmlns:pns="http://tile.axis2.webservice.web.thm.use" type="tns:string" xmlns:tns="http://www.w3.org/2001/XMLSchema"/>
+      </operation>
+      <operation name="getTroopArmiesByHexCell" qname="operNS:getTroopArmiesByHexCell" xmlns:operNS="http://tile.axis2.webservice.web.thm.use" returnQName="retNS:getTroopArmiesByHexCellReturn" xmlns:retNS="http://tile.axis2.webservice.web.thm.use" returnType="rtns:ArrayOf_xsd_anyType" xmlns:rtns="http://tile.axis2.webservice.web.thm.use" returnItemQName="tns:item" xmlns:tns="http://tile.axis2.webservice.web.thm.use" soapAction="" >
+        <parameter qname="pns:sMap" xmlns:pns="http://tile.axis2.webservice.web.thm.use" type="tns:string" xmlns:tns="http://www.w3.org/2001/XMLSchema"/>
+        <parameter qname="pns:sX" xmlns:pns="http://tile.axis2.webservice.web.thm.use" type="tns:string" xmlns:tns="http://www.w3.org/2001/XMLSchema"/>
+        <parameter qname="pns:sY" xmlns:pns="http://tile.axis2.webservice.web.thm.use" type="tns:string" xmlns:tns="http://www.w3.org/2001/XMLSchema"/>
+      </operation>
+      <operation name="getTroopArmyCount" qname="operNS:getTroopArmyCount" xmlns:operNS="http://tile.axis2.webservice.web.thm.use" returnQName="retNS:getTroopArmyCountReturn" xmlns:retNS="http://tile.axis2.webservice.web.thm.use" returnType="rtns:int" xmlns:rtns="http://www.w3.org/2001/XMLSchema" soapAction="" >
+      </operation>
+      <operation name="getNow" qname="operNS:getNow" xmlns:operNS="http://tile.axis2.webservice.web.thm.use" returnQName="retNS:getNowReturn" xmlns:retNS="http://tile.axis2.webservice.web.thm.use" returnType="rtns:string" xmlns:rtns="http://www.w3.org/2001/XMLSchema" soapAction="" >
+      </operation>
+      <parameter name="allowedMethods" value="getTileDefaulttextByThiskey getVersion getTroopArmiesByHexCell getTroopArmiesAll getTroopArmyCount getNow getProofJndiResourceUsedAvailable"/>
+
+      <typeMapping
+        xmlns:ns="http://tile.axis2.webservice.web.thm.use"
+        qname="ns:>getNowResponse"
+        type="java:use.thm.web.webservice.axis2.tile.GetNowResponse"
+        serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
+        deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
+        encodingStyle=""
+      />
+      <typeMapping
+        xmlns:ns="http://tile.axis2.webservice.web.thm.use"
+        qname="ns:>getTroopArmyCountResponse"
+        type="java:use.thm.web.webservice.axis2.tile.GetTroopArmyCountResponse"
+        serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
+        deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
+        encodingStyle=""
+      />
+      <typeMapping
+        xmlns:ns="http://tile.axis2.webservice.web.thm.use"
+        qname="ns:>getTroopArmiesAllResponse"
+        type="java:use.thm.web.webservice.axis2.tile.GetTroopArmiesAllResponse"
+        serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
+        deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
+        encodingStyle=""
+      />
+      <typeMapping
+        xmlns:ns="http://tile.axis2.webservice.web.thm.use"
+        qname="ns:>getTileDefaulttextByThiskeyResponse"
+        type="java:use.thm.web.webservice.axis2.tile.GetTileDefaulttextByThiskeyResponse"
+        serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
+        deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
+        encodingStyle=""
+      />
+      <typeMapping
+        xmlns:ns="http://tile.axis2.webservice.web.thm.use"
+        qname="ns:>getTroopArmiesByHexCell"
+        type="java:use.thm.web.webservice.axis2.tile.GetTroopArmiesByHexCell"
+        serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
+        deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
+        encodingStyle=""
+      />
+      <typeMapping
+        xmlns:ns="http://tile.axis2.webservice.web.thm.use"
+        qname="ns:>getTileDefaulttextByThiskey"
+        type="java:use.thm.web.webservice.axis2.tile.GetTileDefaulttextByThiskey"
+        serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
+        deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
+        encodingStyle=""
+      />
+      <typeMapping
+        xmlns:ns="http://tile.axis2.webservice.web.thm.use"
+        qname="ns:>getNow"
+        type="java:use.thm.web.webservice.axis2.tile.GetNow"
+        serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
+        deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
+        encodingStyle=""
+      />
+      <typeMapping
+        xmlns:ns="http://tile.axis2.webservice.web.thm.use"
+        qname="ns:>getTroopArmiesAll"
+        type="java:use.thm.web.webservice.axis2.tile.GetTroopArmiesAll"
+        serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
+        deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
+        encodingStyle=""
+      />
+      <typeMapping
+        xmlns:ns="http://tile.axis2.webservice.web.thm.use"
+        qname="ns:>getVersion"
+        type="java:use.thm.web.webservice.axis2.tile.GetVersion"
+        serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
+        deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
+        encodingStyle=""
+      />
+      <typeMapping
+        xmlns:ns="http://pojo.axis2.webservice.web.thm.use"
+        qname="ns:TileDefaulttextPojo"
+        type="java:use.thm.web.webservice.axis2.pojo.TileDefaulttextPojo"
+        serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
+        deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
+        encodingStyle=""
+      />
+      <typeMapping
+        xmlns:ns="http://tile.axis2.webservice.web.thm.use"
+        qname="ns:>getTroopArmyCount"
+        type="java:use.thm.web.webservice.axis2.tile.GetTroopArmyCount"
+        serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
+        deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
+        encodingStyle=""
+      />
+      <typeMapping
+        xmlns:ns="http://tile.axis2.webservice.web.thm.use"
+        qname="ns:>getProofJndiResourceUsedAvailableResponse"
+        type="java:use.thm.web.webservice.axis2.tile.GetProofJndiResourceUsedAvailableResponse"
+        serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
+        deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
+        encodingStyle=""
+      />
+      <typeMapping
+        xmlns:ns="http://tile.axis2.webservice.web.thm.use"
+        qname="ns:>getTroopArmiesByHexCellResponse"
+        type="java:use.thm.web.webservice.axis2.tile.GetTroopArmiesByHexCellResponse"
+        serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
+        deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
+        encodingStyle=""
+      />
+      <arrayMapping
+        xmlns:ns="http://tile.axis2.webservice.web.thm.use"
+        qname="ns:ArrayOf_xsd_anyType"
+        type="java:java.lang.Object[]"
+        innerType="cmp-ns:anyType" xmlns:cmp-ns="http://www.w3.org/2001/XMLSchema"
+        encodingStyle=""
+      />
+      <typeMapping
+        xmlns:ns="http://tile.axis2.webservice.web.thm.use"
+        qname="ns:>getVersionResponse"
+        type="java:use.thm.web.webservice.axis2.tile.GetVersionResponse"
+        serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
+        deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
+        encodingStyle=""
+      />
+      <typeMapping
+        xmlns:ns="http://tile.axis2.webservice.web.thm.use"
+        qname="ns:>getProofJndiResourceUsedAvailable"
+        type="java:use.thm.web.webservice.axis2.tile.GetProofJndiResourceUsedAvailable"
+        serializer="org.apache.axis.encoding.ser.BeanSerializerFactory"
+        deserializer="org.apache.axis.encoding.ser.BeanDeserializerFactory"
+        encodingStyle=""
+      />
+  </service>
+</deployment>
