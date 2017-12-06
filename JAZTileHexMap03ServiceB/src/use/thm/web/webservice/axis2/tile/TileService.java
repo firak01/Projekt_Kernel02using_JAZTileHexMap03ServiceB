@@ -45,7 +45,10 @@ public class TileService{
 		//Missbrauch dieser Methode:
 		//Tryout eine SessionFactory per JNDI zu erzeugen
 		TryoutSessionFactoryCreation objTryout = new TryoutSessionFactoryCreation();
-		boolean bReturn = objTryout.tryoutGetSessionFactoryAlternative();
+		//Das funktioniert. boolean bReturn = objTryout.tryoutGetSessionFactoryByJndi();
+		
+		//DEBUG: 20171206 NEUE ALTERNATIVE ÜBER CONTEXTPROVIDERJNDI
+		boolean bReturn = objTryout.tryoutGetSessionFactoryByJndiContextProvider();
 		if(bReturn){
 			sReturn = "vorhanden";
 		}else{
