@@ -19,6 +19,7 @@ import basic.zKernel.KernelZZZ;
 import tryout.zBasic.persistence.webservice.TryoutSessionFactoryCreation;
 import use.thm.persistence.dao.TileDefaulttextDao;
 import use.thm.persistence.dao.TroopArmyDao;
+import use.thm.persistence.hibernate.HibernateContextProviderJndiSingletonTHM;
 import use.thm.persistence.hibernate.HibernateContextProviderSingletonTHM;
 import use.thm.persistence.model.Key;
 import use.thm.persistence.model.TileDefaulttext;
@@ -66,21 +67,21 @@ public class TileService{
 //			objTest.doIt();
 //			intReturn = new Integer(0);
 			
-			KernelZZZ objKernel = new KernelZZZ(); //Merke: Die Service Klasse selbst kann wohl nicht das KernelObjekt extenden!			
-			 HibernateContextProviderSingletonTHM objContextHibernate = HibernateContextProviderSingletonTHM.getInstance(objKernel);					
+			KernelZZZ objKernel = new KernelZZZ(); //Merke: Die Service Klasse selbst kann wohl nicht das KernelObjekt extenden!
+			//20171207: Wurde die Konfiguration für JNDI wie für  nomaleJ2SE Anwendungen gebaut.
+			//20171207: Version ohne JNDI HibernateContextProviderSingletonTHM objContextHibernate = HibernateContextProviderSingletonTHM.getInstance(objKernel);
+			//                            Context jndiContext = (Context) new InitialContext();
+			//                            SessionFactory sf = (SessionFactory) jndiContext.lookup("java:comp/env/jdbc/ServicePortal");
+                              
+//          Nun wird die Konfiguraton explizit auf die Angaben in der context.xml des Servers reduziert. Die SessionFactory per JNDI geholt. Anschliessend an meinen Context...Provider übergeben.
+			String sContextJndi = "jdbc/ServicePortal";
+			HibernateContextProviderJndiSingletonTHM objContextHibernate = HibernateContextProviderJndiSingletonTHM.getInstance(objKernel, sContextJndi);					
 			objContextHibernate.getConfiguration().setProperty("hibernate.hbm2ddl.auto", "update");  //! Jetzt erst wird jede Tabelle über den Anwendungsstart hinaus gespeichert UND auch wiedergeholt.				
-			
-			//TODO GOON 20171119: Bisher wird die SessionFactory und die daraus resultierende Session auch im WebService aufgebaut wie für eine J2SE Standalone Anwendung.
-			//                                     Nun wird die SessionFactory per JNDI geholt. Anschliessend an meinen Context...Provider übergeben.
-			//                                     So wird eine Session nun mit den spezifischen Server Einstellungen / Angaben gemacht.
 			
 			//Dafür ist es wichtig für JNDI: Die SessionFactory an den Context zu binden
 			//objContextHibernate.getConfiguration().setProperty("hibernate.session_factory_name", "tryout.zBasic.persistence.hibernate.HibernateSessionFactoryTomcatFactory");
 //			objContextHibernate.getConfiguration().setProperty("hibernate.session_factory_name","hibernate.session-factory.ServicePortal");	//derselbe Name wird dann in jndiContext.lookup(...) gebraucht.
-//			objContextHibernate.getConfiguration().setProperty("hibernate.connection.datasource", "java:comp/env/jdbc/ServicePortal");//siehe context.xml <RessourceLink> Tag.  //Merke comp/env ist fester Bestandteil für alle JNDI Pfade
-			
-			
-			Context jndiContext = (Context) new InitialContext();		
+//			objContextHibernate.getConfiguration().setProperty("hibernate.connection.datasource", "java:comp/env/jdbc/ServicePortal");//siehe context.xml <RessourceLink> Tag.  //Merke comp/env ist fester Bestandteil für alle JNDI Pfade					
 			//SessionFactory sf = (SessionFactory) jndiContext.lookup("hibernate.session-factory.ServicePortal");
 
 			//Mein Ansatz: Verwende eine eigene SessionFactory und nimm die erstellte Konfiguration (aus HibernateContextProviderTHM) weiterhin und überschreibe diese ggfs. aus der Konfiguration.
@@ -88,7 +89,6 @@ public class TileService{
 			//Merke: Damit diese Resource bekannt ist im Web Service, muss er neu gebaut werden. Nur dann ist die web.xml aktuell genug.
 			//Merke: java:comp/env/ ist der JNDI "Basis" Pfad, der vorangestellt werden muss. Das ist also falsch: //SessionFactory sf = (SessionFactory) jndiContext.lookup("java:jdbc/ServicePortal");
 			//Merke: /jdbc/ServicePortal ist in der context.xml im <RessourceLink>-Tag definiert UND in der web.xml im <resource-env-ref>-Tag
-			SessionFactory sf = (SessionFactory) jndiContext.lookup("java:comp/env/jdbc/ServicePortal");
 												
 			TroopArmyDao daoTroop = new TroopArmyDao(objContextHibernate);
 			int iTroopCounted = daoTroop.count();
@@ -105,9 +105,9 @@ public class TileService{
 //				session.close();
 //			    sf.close();
 //			}
-		} catch (NamingException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();			
+//		} catch (NamingException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();			
 		} catch (ExceptionZZZ e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
