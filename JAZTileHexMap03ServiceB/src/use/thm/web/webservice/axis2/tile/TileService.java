@@ -29,7 +29,7 @@ import use.thm.web.webservice.axis2.pojo.TroopArmyPojo;
 
 public class TileService{
 	public String getVersion(){
-		String sVersion = "0.07";			
+		String sVersion = "0.08";			
 		return sVersion;
 	}
 	public String getNow(){
