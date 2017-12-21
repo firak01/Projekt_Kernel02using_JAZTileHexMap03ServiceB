@@ -40,6 +40,12 @@ public class TileService{
 		return sReturn;
 	}
 	
+	/**Merke: Das ist der hartverdrahtete Einsatz der Methode.
+	 *        In den WebServices kann durchaus eine Methode existieren, in der der JndiContext String übergeben wird.
+	 *        Z.B.  HibernateCheckConfigurationServiceZZZ.getProofJndiResourceAvailable(sContextJndi);
+	 * @param sJndiContext
+	 * @return
+	 */
 	public String getProofJndiResourceUsedAvailable(){
 		String sReturn=null;
 		
@@ -176,6 +182,11 @@ public class TileService{
 				objPojo.setUniquename(objTroop.getUniquename());
 				objPojo.setPlayer(new Integer(objTroop.getPlayer()));
 				objPojo.setType(objTroop.getTroopType());
+				
+				//Der Vollständigkeit halber auch die Eingangswerte zurückgeben, sofern sie zum POJO gehören.
+				objPojo.setMapAlias(sMap);
+				objPojo.setMapX(objTroop.getMapX());
+				objPojo.setMapY(objTroop.getMapY());				
 				listReturn.add(objPojo);
 			}		
 		} catch (ExceptionZZZ e){
