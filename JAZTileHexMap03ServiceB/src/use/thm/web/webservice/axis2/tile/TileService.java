@@ -15,6 +15,7 @@ import org.hibernate.SessionFactory;
 import org.hibernate.internal.SessionFactoryImpl;
 
 import basic.zBasic.ExceptionZZZ;
+import basic.zBasic.KernelSingletonTHM;
 import basic.zKernel.KernelZZZ;
 import tryout.zBasic.persistence.webservice.TryoutSessionFactoryCreation;
 import use.thm.persistence.dao.TileDefaulttextDao;
@@ -29,8 +30,13 @@ import use.thm.web.webservice.axis2.pojo.TroopArmyPojo;
 
 public class TileService{
 	public String getVersion(){
-		String sVersion = "0.08";			
+		String sVersion = "0.081";			
 		return sVersion;
+		
+		/*
+		 * 0.081: Einbau einer anderen SQLITE Version und eines anderen Dialekts, was entsprechend der SWING Applikation angepasst wurde.
+		 * 
+		 */
 	}
 	public String getNow(){
 		Calendar cal = Calendar.getInstance();
@@ -73,15 +79,20 @@ public class TileService{
 //			objTest.doIt();
 //			intReturn = new Integer(0);
 			
-			KernelZZZ objKernel = new KernelZZZ(); //Merke: Die Service Klasse selbst kann wohl nicht das KernelObjekt extenden!
+			//KernelZZZ objKernel = new KernelZZZ(); //Merke: Die Service Klasse selbst kann wohl nicht das KernelObjekt extenden!
 			//20171207: Wurde die Konfiguration für JNDI wie für  nomaleJ2SE Anwendungen gebaut.
 			//20171207: Version ohne JNDI HibernateContextProviderSingletonTHM objContextHibernate = HibernateContextProviderSingletonTHM.getInstance(objKernel);
 			//                            Context jndiContext = (Context) new InitialContext();
 			//                            SessionFactory sf = (SessionFactory) jndiContext.lookup("java:comp/env/jdbc/ServicePortal");
                               
 //          Nun wird die Konfiguraton explizit auf die Angaben in der context.xml des Servers reduziert. Die SessionFactory per JNDI geholt. Anschliessend an meinen Context...Provider übergeben.
-			String sContextJndi = "jdbc/ServicePortal";
-			HibernateContextProviderJndiSingletonTHM objContextHibernate = HibernateContextProviderJndiSingletonTHM.getInstance(objKernel, sContextJndi);					
+//			String sContextJndi = "jdbc/ServicePortal";
+//			HibernateContextProviderJndiSingletonTHM objContextHibernate = HibernateContextProviderJndiSingletonTHM.getInstance(objKernel, sContextJndi);
+			
+			KernelSingletonTHM objKernelSingleton = KernelSingletonTHM.getInstance();
+			String sDatabaseRemoteNameJNDI = objKernelSingleton.getParameter("DatabasesRemoteNameJNDI");
+			HibernateContextProviderJndiSingletonTHM objContextHibernate = HibernateContextProviderJndiSingletonTHM.getInstance(objKernelSingleton, sDatabaseRemoteNameJNDI);
+			
 			objContextHibernate.getConfiguration().setProperty("hibernate.hbm2ddl.auto", "update");  //! Jetzt erst wird jede Tabelle über den Anwendungsstart hinaus gespeichert UND auch wiedergeholt.				
 			
 			//Dafür ist es wichtig für JNDI: Die SessionFactory an den Context zu binden
@@ -130,10 +141,15 @@ public class TileService{
 			//HOLE DIE SESSIONFACTORY PER JNDI:
 			//Merke: DAS FUNKTIONIERT NUR, WENN DIE ANWENDUNG IN EINEM SERVER (z.B. Tomcat läuft).
 			
-			KernelZZZ objKernel = new KernelZZZ(); //Merke: Die Service Klasse selbst kann wohl nicht das KernelObjekt extenden!			
+//			KernelZZZ objKernel = new KernelZZZ(); //Merke: Die Service Klasse selbst kann wohl nicht das KernelObjekt extenden!			
 			//HibernateContextProviderSingletonTHM objContextHibernate = HibernateContextProviderSingletonTHM.getInstance(objKernel);
-			String sContextJndi = "jdbc/ServicePortal";
-			HibernateContextProviderJndiSingletonTHM objContextHibernate = HibernateContextProviderJndiSingletonTHM.getInstance(objKernel, sContextJndi);
+//			String sContextJndi = "jdbc/ServicePortal";
+//			HibernateContextProviderJndiSingletonTHM objContextHibernate = HibernateContextProviderJndiSingletonTHM.getInstance(objKernel, sContextJndi);
+			
+			KernelSingletonTHM objKernelSingleton = KernelSingletonTHM.getInstance();
+			String sDatabaseRemoteNameJNDI = objKernelSingleton.getParameter("DatabasesRemoteNameJNDI");
+			HibernateContextProviderJndiSingletonTHM objContextHibernate = HibernateContextProviderJndiSingletonTHM.getInstance(objKernelSingleton, sDatabaseRemoteNameJNDI);
+			
 			objContextHibernate.getConfiguration().setProperty("hibernate.hbm2ddl.auto", "update");  //! Jetzt erst wird jede Tabelle über den Anwendungsstart hinaus gespeichert UND auch wiedergeholt.				
 			
 			//############################
@@ -205,10 +221,15 @@ public class TileService{
 			//HOLE DIE SESSIONFACTORY PER JNDI:
 			//Merke: DAS FUNKTIONIERT NUR, WENN DIE ANWENDUNG IN EINEM SERVER (z.B. Tomcat läuft).
 			
-			KernelZZZ objKernel = new KernelZZZ(); //Merke: Die Service Klasse selbst kann wohl nicht das KernelObjekt extenden!			
+			//KernelZZZ objKernel = new KernelZZZ(); //Merke: Die Service Klasse selbst kann wohl nicht das KernelObjekt extenden!			
 			//HibernateContextProviderSingletonTHM objContextHibernate = HibernateContextProviderSingletonTHM.getInstance(objKernel);
-			String sContextJndi = "jdbc/ServicePortal";
-			HibernateContextProviderJndiSingletonTHM objContextHibernate = HibernateContextProviderJndiSingletonTHM.getInstance(objKernel, sContextJndi);
+			//String sContextJndi = "jdbc/ServicePortal";
+			//HibernateContextProviderJndiSingletonTHM objContextHibernate = HibernateContextProviderJndiSingletonTHM.getInstance(objKernel, sContextJndi);
+			
+			KernelSingletonTHM objKernelSingleton = KernelSingletonTHM.getInstance();
+			String sDatabaseRemoteNameJNDI = objKernelSingleton.getParameter("DatabasesRemoteNameJNDI");
+						
+			HibernateContextProviderJndiSingletonTHM objContextHibernate = HibernateContextProviderJndiSingletonTHM.getInstance(objKernelSingleton, sDatabaseRemoteNameJNDI);
 			objContextHibernate.getConfiguration().setProperty("hibernate.hbm2ddl.auto", "update");  //! Jetzt erst wird jede Tabelle über den Anwendungsstart hinaus gespeichert UND auch wiedergeholt.				
 			
 			//############################
@@ -281,11 +302,15 @@ public class TileService{
 			//HOLE DIE SESSIONFACTORY PER JNDI:
 			//Merke: DAS FUNKTIONIERT NUR, WENN DIE ANWENDUNG IN EINEM SERVER (z.B. Tomcat läuft).
 			
-			KernelZZZ objKernel = new KernelZZZ(); //Merke: Die Service Klasse selbst kann wohl nicht das KernelObjekt extenden!				
+			//KernelZZZ objKernel = new KernelZZZ(); //Merke: Die Service Klasse selbst kann wohl nicht das KernelObjekt extenden!				
 			//HibernateContextProviderSingletonTHM objContextHibernate = HibernateContextProviderSingletonTHM.getInstance(objKernel);					
 			
-			String sContextJndi = "jdbc/ServicePortal";
-			HibernateContextProviderJndiSingletonTHM objContextHibernate = HibernateContextProviderJndiSingletonTHM.getInstance(objKernel, sContextJndi);
+			//String sContextJndi = "jdbc/ServicePortal";
+			
+			KernelSingletonTHM objKernelSingleton = KernelSingletonTHM.getInstance();
+			String sDatabaseRemoteNameJNDI = objKernelSingleton.getParameter("DatabasesRemoteNameJNDI");
+			
+			HibernateContextProviderJndiSingletonTHM objContextHibernate = HibernateContextProviderJndiSingletonTHM.getInstance(objKernelSingleton, sDatabaseRemoteNameJNDI);
 			objContextHibernate.getConfiguration().setProperty("hibernate.hbm2ddl.auto", "update");  //! Jetzt erst wird jede Tabelle über den Anwendungsstart hinaus gespeichert UND auch wiedergeholt.				
 			
 			//############################
