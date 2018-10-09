@@ -1,15 +1,25 @@
 package use.thm.web.webservice.axis2.tile;
 
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
+import javax.annotation.Resource;
 import javax.jws.WebService;
 import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
+import javax.servlet.ServletContext;
+import javax.xml.ws.handler.MessageContext;
+import javax.xml.ws.WebServiceContext;
 
+import org.apache.commons.io.FileUtils;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.internal.SessionFactoryImpl;
@@ -29,11 +39,20 @@ import use.thm.web.webservice.axis2.pojo.TileDefaulttextPojo;
 import use.thm.web.webservice.axis2.pojo.TroopArmyPojo;
 
 public class TileService{
+	//Das funktoiniert wohl nur, wenn diese Ressource irgendwie bekannt gemacht worden ist.
+	//@Resource
+	//private WebServiceContext context; //Das soll durch die Annotation dieses Context Objekt zur Verfügung stellen.
+	
+	@Resource
+	ServletContext context; //you can specify in your method argument
+	//String realPath = context.getRealPath("/");
+	
 	public String getVersion(){
-		String sVersion = "0.081";			
+		String sVersion = "0.082";			
 		return sVersion;
 		
 		/*
+		 * 0.082: Hole den zu verwendenen JNDI-String aus der Kernel-Konfiguration. (Lies überhaupt erstmalig die Kernel Koniguration per WebService aus).
 		 * 0.081: Einbau einer anderen SQLITE Version und eines anderen Dialekts, was entsprechend der SWING Applikation angepasst wurde.
 		 * 
 		 */
@@ -88,9 +107,37 @@ public class TileService{
 //          Nun wird die Konfiguraton explizit auf die Angaben in der context.xml des Servers reduziert. Die SessionFactory per JNDI geholt. Anschliessend an meinen Context...Provider übergeben.
 //			String sContextJndi = "jdbc/ServicePortal";
 //			HibernateContextProviderJndiSingletonTHM objContextHibernate = HibernateContextProviderJndiSingletonTHM.getInstance(objKernel, sContextJndi);
+		
 			
+			//  String s = context.getRealPath("TESTE");//TODO GOON 20181005 wie den context hier injekten per annotations????											
+			//ServletContext servletContext = (ServletContext) context.getMessageContext().get(MessageContext.SERVLET_CONTEXT);
+		
+			
+			
+			//Andere Ansatz, siehe: https://www.java-forum.org/thema/auf-dateien-im-war-zugreifen.157897/
+		   	//File f;	
+		    //URL resource = getClass().getClassLoader().getResource("/ZKernelConfigTileHexMap02Client.ini"); //Fehler URI is not hierarchical							
+//		    try {
+//		      f = new File(resource.toURI());
+//		    } catch(URISyntaxException e) {
+//		      f = new File(resource.getPath());
+//		    }
+			
+			//..."when the resource is bundled as a jar/war or any other single file package for that matter."
+//			File f;
+//			try {
+//				f = File.createTempFile("aaaaa", "zzzzz");
+//				f.deleteOnExit();
+//				InputStream resourceAsStream = getClass().getClassLoader().getResourceAsStream("/ZKernelConfigTileHexMap02Client.ini");		    
+//				FileUtils.copyInputStreamToFile(resourceAsStream, f);
+//			} catch (IOException e) {
+//				// TODO Auto-generated catch block
+//				e.printStackTrace();
+//			}
+		    
+			//20181008: Lies die zu verwendende JNDI-Ressource aus der Kernelkoniguration aus.
 			KernelSingletonTHM objKernelSingleton = KernelSingletonTHM.getInstance();
-			String sDatabaseRemoteNameJNDI = objKernelSingleton.getParameter("DatabasesRemoteNameJNDI");
+			String sDatabaseRemoteNameJNDI = objKernelSingleton.getParameter("DatabaseRemoteNameJNDI");
 			HibernateContextProviderJndiSingletonTHM objContextHibernate = HibernateContextProviderJndiSingletonTHM.getInstance(objKernelSingleton, sDatabaseRemoteNameJNDI);
 			
 			objContextHibernate.getConfiguration().setProperty("hibernate.hbm2ddl.auto", "update");  //! Jetzt erst wird jede Tabelle über den Anwendungsstart hinaus gespeichert UND auch wiedergeholt.				
@@ -147,7 +194,7 @@ public class TileService{
 //			HibernateContextProviderJndiSingletonTHM objContextHibernate = HibernateContextProviderJndiSingletonTHM.getInstance(objKernel, sContextJndi);
 			
 			KernelSingletonTHM objKernelSingleton = KernelSingletonTHM.getInstance();
-			String sDatabaseRemoteNameJNDI = objKernelSingleton.getParameter("DatabasesRemoteNameJNDI");
+			String sDatabaseRemoteNameJNDI = objKernelSingleton.getParameter("DatabaseRemoteNameJNDI");
 			HibernateContextProviderJndiSingletonTHM objContextHibernate = HibernateContextProviderJndiSingletonTHM.getInstance(objKernelSingleton, sDatabaseRemoteNameJNDI);
 			
 			objContextHibernate.getConfiguration().setProperty("hibernate.hbm2ddl.auto", "update");  //! Jetzt erst wird jede Tabelle über den Anwendungsstart hinaus gespeichert UND auch wiedergeholt.				
@@ -227,7 +274,7 @@ public class TileService{
 			//HibernateContextProviderJndiSingletonTHM objContextHibernate = HibernateContextProviderJndiSingletonTHM.getInstance(objKernel, sContextJndi);
 			
 			KernelSingletonTHM objKernelSingleton = KernelSingletonTHM.getInstance();
-			String sDatabaseRemoteNameJNDI = objKernelSingleton.getParameter("DatabasesRemoteNameJNDI");
+			String sDatabaseRemoteNameJNDI = objKernelSingleton.getParameter("DatabaseRemoteNameJNDI");
 						
 			HibernateContextProviderJndiSingletonTHM objContextHibernate = HibernateContextProviderJndiSingletonTHM.getInstance(objKernelSingleton, sDatabaseRemoteNameJNDI);
 			objContextHibernate.getConfiguration().setProperty("hibernate.hbm2ddl.auto", "update");  //! Jetzt erst wird jede Tabelle über den Anwendungsstart hinaus gespeichert UND auch wiedergeholt.				
@@ -308,7 +355,7 @@ public class TileService{
 			//String sContextJndi = "jdbc/ServicePortal";
 			
 			KernelSingletonTHM objKernelSingleton = KernelSingletonTHM.getInstance();
-			String sDatabaseRemoteNameJNDI = objKernelSingleton.getParameter("DatabasesRemoteNameJNDI");
+			String sDatabaseRemoteNameJNDI = objKernelSingleton.getParameter("DatabaseRemoteNameJNDI");
 			
 			HibernateContextProviderJndiSingletonTHM objContextHibernate = HibernateContextProviderJndiSingletonTHM.getInstance(objKernelSingleton, sDatabaseRemoteNameJNDI);
 			objContextHibernate.getConfiguration().setProperty("hibernate.hbm2ddl.auto", "update");  //! Jetzt erst wird jede Tabelle über den Anwendungsstart hinaus gespeichert UND auch wiedergeholt.				
