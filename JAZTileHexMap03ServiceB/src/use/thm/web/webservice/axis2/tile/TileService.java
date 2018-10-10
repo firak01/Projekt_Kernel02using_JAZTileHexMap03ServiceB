@@ -108,33 +108,11 @@ public class TileService{
 //			String sContextJndi = "jdbc/ServicePortal";
 //			HibernateContextProviderJndiSingletonTHM objContextHibernate = HibernateContextProviderJndiSingletonTHM.getInstance(objKernel, sContextJndi);
 		
-			
-			//  String s = context.getRealPath("TESTE");//TODO GOON 20181005 wie den context hier injekten per annotations????											
+
+			//TODO 20181005 wie den context hier injekten per annotations????
+			//String s = context.getRealPath("TESTE");											
 			//ServletContext servletContext = (ServletContext) context.getMessageContext().get(MessageContext.SERVLET_CONTEXT);
-		
-			
-			
-			//Andere Ansatz, siehe: https://www.java-forum.org/thema/auf-dateien-im-war-zugreifen.157897/
-		   	//File f;	
-		    //URL resource = getClass().getClassLoader().getResource("/ZKernelConfigTileHexMap02Client.ini"); //Fehler URI is not hierarchical							
-//		    try {
-//		      f = new File(resource.toURI());
-//		    } catch(URISyntaxException e) {
-//		      f = new File(resource.getPath());
-//		    }
-			
-			//..."when the resource is bundled as a jar/war or any other single file package for that matter."
-//			File f;
-//			try {
-//				f = File.createTempFile("aaaaa", "zzzzz");
-//				f.deleteOnExit();
-//				InputStream resourceAsStream = getClass().getClassLoader().getResourceAsStream("/ZKernelConfigTileHexMap02Client.ini");		    
-//				FileUtils.copyInputStreamToFile(resourceAsStream, f);
-//			} catch (IOException e) {
-//				// TODO Auto-generated catch block
-//				e.printStackTrace();
-//			}
-		    
+
 			//20181008: Lies die zu verwendende JNDI-Ressource aus der Kernelkoniguration aus.
 			KernelSingletonTHM objKernelSingleton = KernelSingletonTHM.getInstance();
 			String sDatabaseRemoteNameJNDI = objKernelSingleton.getParameter("DatabaseRemoteNameJNDI");
