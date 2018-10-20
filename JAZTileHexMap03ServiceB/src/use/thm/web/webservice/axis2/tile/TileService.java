@@ -151,7 +151,7 @@ public class TileService{
 //			// TODO Auto-generated catch block
 //			e.printStackTrace();			
 		} catch (ExceptionZZZ e) {
-			// TODO Auto-generated catch block
+			System.out.println(e.getDetailAllLast());
 			e.printStackTrace();
 		}
 		return intReturn;
@@ -231,7 +231,7 @@ public class TileService{
 				listReturn.add(objPojo);
 			}		
 		} catch (ExceptionZZZ e){
-			// TODO Auto-generated catch block
+			System.out.println(e.getDetailAllLast());
 			e.printStackTrace();
 		}
 		return listReturn;	
@@ -311,7 +311,7 @@ public class TileService{
 				listReturn.add(objPojo);
 			}
 		} catch (ExceptionZZZ e){
-			// TODO Auto-generated catch block
+			System.out.println(e.getDetailAllLast());
 			e.printStackTrace();
 		}
 		return listReturn;	
@@ -393,7 +393,7 @@ public class TileService{
 				objReturn.setDescriptiontext(sDescription);
 			}													
 		} catch (ExceptionZZZ e) {
-			// TODO Auto-generated catch block
+			System.out.println(e.getDetailAllLast());
 			e.printStackTrace();		
 		}
 		return objReturn;
