@@ -48,11 +48,12 @@ public class TileService{
 	//String realPath = context.getRealPath("/");
 	
 	public String getVersion(){
-		String sVersion = "0.082";			
+		String sVersion = "0.09";			
 		return sVersion;
 		
 		/*
-		 * 0.082: Hole den zu verwendenen JNDI-String aus der Kernel-Konfiguration. (Lies überhaupt erstmalig die Kernel Koniguration per WebService aus).
+		 * 0.090: Löschen eines Spielsteins, per UniqueName.
+ 		 * 0.082: Hole den zu verwendenen JNDI-String aus der Kernel-Konfiguration. (Lies überhaupt erstmalig die Kernel Koniguration per WebService aus).
 		 * 0.081: Einbau einer anderen SQLITE Version und eines anderen Dialekts, was entsprechend der SWING Applikation angepasst wurde.
 		 * 
 		 */
@@ -65,9 +66,10 @@ public class TileService{
 		return sReturn;
 	}
 	
-	/**Merke: Das ist der hartverdrahtete Einsatz der Methode.
-	 *        In den WebServices kann durchaus eine Methode existieren, in der der JndiContext String übergeben wird.
-	 *        Z.B.  HibernateCheckConfigurationServiceZZZ.getProofJndiResourceAvailable(sContextJndi);
+	/**Merke1: Das ist der hartverdrahtete Einsatz der Methode.
+	 *         In den WebServices kann durchaus eine Methode existieren, in der der JndiContext String übergeben wird.
+	 *         Z.B.  HibernateCheckConfigurationServiceZZZ.getProofJndiResourceAvailable(sContextJndi);
+	 * Merke 2: Seit 20181020 gibt es auch ein JAZKernelServiceZZZ Projekt, in dem dies ohne Hibernate-Klassen gelöst wurde.
 	 * @param sJndiContext
 	 * @return
 	 */
