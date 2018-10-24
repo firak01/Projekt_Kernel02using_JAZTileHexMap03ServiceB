@@ -24,16 +24,25 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.internal.SessionFactoryImpl;
 
+import basic.persistence.daoFacade.GeneralDaoFacadeZZZ;
 import basic.zBasic.ExceptionZZZ;
 import basic.zBasic.KernelSingletonTHM;
+import basic.zBasic.util.datatype.string.StringZZZ;
 import basic.zKernel.KernelZZZ;
 import tryout.zBasic.persistence.webservice.TryoutSessionFactoryCreation;
+import use.thm.persistence.dao.AreaCellDao;
 import use.thm.persistence.dao.TileDefaulttextDao;
 import use.thm.persistence.dao.TroopArmyDao;
+import use.thm.persistence.dao.TroopDao;
+import use.thm.persistence.daoFacade.TileDaoFacade;
+import use.thm.persistence.daoFacade.TileDaoFacadeFactoryTHM;
 import use.thm.persistence.hibernate.HibernateContextProviderJndiSingletonTHM;
 import use.thm.persistence.hibernate.HibernateContextProviderSingletonTHM;
+import use.thm.persistence.model.AreaCell;
+import use.thm.persistence.model.CellId;
 import use.thm.persistence.model.Key;
 import use.thm.persistence.model.TileDefaulttext;
+import use.thm.persistence.model.Troop;
 import use.thm.persistence.model.TroopArmy;
 import use.thm.web.webservice.axis2.pojo.TileDefaulttextPojo;
 import use.thm.web.webservice.axis2.pojo.TroopArmyPojo;
@@ -73,7 +82,7 @@ public class TileService{
 	 * @param sJndiContext
 	 * @return
 	 */
-	public String getProofJndiResourceUsedAvailable(){
+	public String proofJndiResourceUsedAvailable(){
 		String sReturn=null;
 		
 		//Missbrauch dieser Methode:
@@ -136,22 +145,15 @@ public class TileService{
 												
 			TroopArmyDao daoTroop = new TroopArmyDao(objContextHibernate);
 			int iTroopCounted = daoTroop.count();
+			System.out.println("###############################################################################");
 			System.out.println("Es gibt platzierte Armeen: " + iTroopCounted);
+			System.out.println("###############################################################################");
 			
 			intReturn = new Integer(iTroopCounted);
 			
-		    //Mache die Session und anschliessend alles wieder zu, inklusive der SessionFactory...
-//			Session session = null;
-//			if(sf!=null){
-//				session = sf.openSession();
-//				//.........
-//				session.clear();
-//				session.close();
-//			    sf.close();
-//			}
-//		} catch (NamingException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();			
+			//Nach dem Update soll mit dem UI weitergearbeitet werden können			
+			objContextHibernate.closeAll();
+			System.out.println("SessionFactory über den HibernateContextProvider geschlossen.... Nun wieder bearbeitbar im Java Swing Client?");			
 		} catch (ExceptionZZZ e) {
 			System.out.println(e.getDetailAllLast());
 			e.printStackTrace();
@@ -215,7 +217,10 @@ public class TileService{
 						
 			TroopArmyDao daoTroop = new TroopArmyDao(objContextHibernate);
 			List<TroopArmy>listTroopArmy = daoTroop.searchTileCollectionByHexCell(sMap, sX, sY);//.searchTileIdCollectionByHexCell(sMap, sX, sY);
+			
+			System.out.println("###############################################################################");
 			System.out.println("Es gibt auf der Karte '" + sMap + " an X/Y (" + sX + "/" + sY + ") platzierte Armeen: " + listTroopArmy.size());
+			System.out.println("###############################################################################");
 			
 			if(listTroopArmy.size()>=1){
 				listReturn = new ArrayList<TroopArmyPojo>();
@@ -231,7 +236,11 @@ public class TileService{
 				objPojo.setMapX(objTroop.getMapX());
 				objPojo.setMapY(objTroop.getMapY());				
 				listReturn.add(objPojo);
-			}		
+			}	
+			
+			//Nach dem Update soll mit dem UI weitergearbeitet werden können			
+			objContextHibernate.closeAll();
+			System.out.println("SessionFactory über den HibernateContextProvider geschlossen.... Nun wieder bearbeitbar im Java Swing Client?");
 		} catch (ExceptionZZZ e){
 			System.out.println(e.getDetailAllLast());
 			e.printStackTrace();
@@ -296,7 +305,9 @@ public class TileService{
 			TroopArmyDao daoTroop = new TroopArmyDao(objContextHibernate);
 			List<TroopArmy>listTroopArmy = daoTroop.searchTroopArmiesAll(sMap);			
 			if(listTroopArmy.size()>=1){
-				System.out.println("Es gibt auf der Karte '" + sMap + " platzierte Armeen: " + listTroopArmy.size());				
+				System.out.println("###############################################################################");
+				System.out.println("Es gibt auf der Karte '" + sMap + " platzierte Armeen: " + listTroopArmy.size());
+				System.out.println("###############################################################################");
 				listReturn = new ArrayList<TroopArmyPojo>();
 			}
 			for(TroopArmy objTroop : listTroopArmy){
@@ -312,6 +323,10 @@ public class TileService{
 				
 				listReturn.add(objPojo);
 			}
+			
+			//Nach dem Update soll mit dem UI weitergearbeitet werden können			
+			objContextHibernate.closeAll();
+			System.out.println("SessionFactory über den HibernateContextProvider geschlossen.... Nun wieder bearbeitbar im Java Swing Client?");
 		} catch (ExceptionZZZ e){
 			System.out.println(e.getDetailAllLast());
 			e.printStackTrace();
@@ -377,7 +392,9 @@ public class TileService{
 			TileDefaulttextDao daoText = new TileDefaulttextDao(objContextHibernate);
 			Key objKey = daoText.searchThiskey(lngThiskey);
 			if(objKey==null){
+				System.out.println("###############################################################################");
 				System.out.println("Thiskey='"+lngThiskey.toString()+"' NICHT gefunden.");
+				System.out.println("###############################################################################");
 			}else{
 				TileDefaulttext objValue = (TileDefaulttext) objKey;
 				
@@ -385,7 +402,9 @@ public class TileService{
 				String sShorttext = objValue.getShorttext();				
 				String sLongtext = objValue.getLongtext();
 				
+				System.out.println("###############################################################################");
 				System.out.println("Thiskey='"+lngThiskey.toString()+"' gefunden. ("+sShorttext+"|"+sLongtext+"|"+sDescription+")");
+				System.out.println("###############################################################################");
 				
 				//### Übergib nun die gefundenen Werte an das POJO - Objekt
 				objReturn = new TileDefaulttextPojo();
@@ -393,7 +412,11 @@ public class TileService{
 				objReturn.setShorttext(sShorttext);
 				objReturn.setLongtext(sLongtext);
 				objReturn.setDescriptiontext(sDescription);
-			}													
+			}	
+			
+			//Nach dem Update soll mit dem UI weitergearbeitet werden können			
+			objContextHibernate.closeAll();
+			System.out.println("SessionFactory über den HibernateContextProvider geschlossen.... Nun wieder bearbeitbar im Java Swing Client?");
 		} catch (ExceptionZZZ e) {
 			System.out.println(e.getDetailAllLast());
 			e.printStackTrace();		
@@ -401,4 +424,68 @@ public class TileService{
 		return objReturn;
 				
 	}
+	
+	public String deleteTile(String sUniqueName){
+		String sReturn = null;
+		try{
+			main:{				
+				if(StringZZZ.isEmpty(sUniqueName)) break main;
+				
+				//HOLE DIE SESSIONFACTORY PER JNDI:
+				//Merke: DAS FUNKTIONIERT NUR, WENN DIE ANWENDUNG IN EINEM SERVER (z.B. Tomcat läuft).
+				
+				//KernelZZZ objKernel = new KernelZZZ(); //Merke: Die Service Klasse selbst kann wohl nicht das KernelObjekt extenden!				
+				//HibernateContextProviderSingletonTHM objContextHibernate = HibernateContextProviderSingletonTHM.getInstance(objKernel);					
+				
+				//String sContextJndi = "jdbc/ServicePortal";
+				
+				KernelSingletonTHM objKernelSingleton = KernelSingletonTHM.getInstance();
+				String sDatabaseRemoteNameJNDI = objKernelSingleton.getParameter("DatabaseRemoteNameJNDI");
+				
+				HibernateContextProviderJndiSingletonTHM objContextHibernate = HibernateContextProviderJndiSingletonTHM.getInstance(objKernelSingleton, sDatabaseRemoteNameJNDI);
+				objContextHibernate.getConfiguration().setProperty("hibernate.hbm2ddl.auto", "update");  //! Jetzt erst wird jede Tabelle über den Anwendungsstart hinaus gespeichert UND auch wiedergeholt.				
+				
+				//### Hole das Troop-Objekt hier. 
+				TroopDao daoTroop = new TroopDao(objContextHibernate);
+				//Troop objTroop = (Troop) daoTroop.searchTileByUniquename(sUniqueName);
+				Troop objTroop = (Troop) daoTroop.searchTroopByUniquename(sUniqueName);
+				if(objTroop == null){
+					
+					sReturn = "KEIN Troop-Objekt mit dem UniqueName '" + sUniqueName + "' gefunden.";			
+					break main;
+				}			
+				sReturn = "Troop-Objekt mit dem UniqueName '" + sUniqueName + "' gefunden.";
+				System.out.println("###############################################################################");
+				System.out.println(sReturn);
+				System.out.println("###############################################################################");
+				
+				String sTroopType = objTroop.getTroopType();				
+				sReturn = "Troop-Objekt mit dem UniqueName '" + sUniqueName + "' hat den TroopType='"+ sTroopType +"'.";
+				
+				
+				TileDaoFacadeFactoryTHM objDaoFacadeFactory = TileDaoFacadeFactoryTHM.getInstance(objKernelSingleton);
+				TileDaoFacade objFacade = (TileDaoFacade) objDaoFacadeFactory.createDaoFacadeJndi(objTroop);
+				sReturn = "TileDaoFacade-Objekt für JNDI erstellt.";
+				
+				boolean bSuccess = objFacade.delete(objTroop);
+				if(bSuccess){
+					sReturn = "Erfolgreich gelöscht";
+				}else{
+					sReturn = "NICHT erfolgreich gelöscht.";					
+				}			
+				System.out.println("###############################################################################");
+				System.out.println(sReturn);
+				System.out.println("###############################################################################");
+				
+				//Nach dem Update soll mit dem UI weitergearbeitet werden können			
+				objContextHibernate.closeAll();
+				System.out.println("SessionFactory über den HibernateContextProvider geschlossen.... Nun wieder bearbeitbar im Java Swing Client?");				
+			}//end main:
+		} catch (ExceptionZZZ e) {
+			System.out.println(e.getDetailAllLast());
+			e.printStackTrace();		
+		}
+		return sReturn;
+	}
+	
 }
