@@ -27,13 +27,16 @@ import org.hibernate.internal.SessionFactoryImpl;
 import basic.persistence.daoFacade.GeneralDaoFacadeZZZ;
 import basic.zBasic.ExceptionZZZ;
 import basic.zBasic.KernelSingletonTHM;
+import basic.zBasic.ReflectCodeZZZ;
 import basic.zBasic.util.datatype.string.StringZZZ;
 import basic.zKernel.KernelZZZ;
 import tryout.zBasic.persistence.webservice.TryoutSessionFactoryCreation;
 import use.thm.persistence.dao.AreaCellDao;
 import use.thm.persistence.dao.TileDefaulttextDao;
 import use.thm.persistence.dao.TroopArmyDao;
+import use.thm.persistence.dao.TroopArmyVariantDao;
 import use.thm.persistence.dao.TroopDao;
+import use.thm.persistence.dao.TroopVariantDao;
 import use.thm.persistence.daoFacade.TileDaoFacade;
 import use.thm.persistence.daoFacade.TileDaoFacadeFactoryTHM;
 import use.thm.persistence.hibernate.HibernateContextProviderJndiSingletonTHM;
@@ -44,6 +47,8 @@ import use.thm.persistence.model.Key;
 import use.thm.persistence.model.TileDefaulttext;
 import use.thm.persistence.model.Troop;
 import use.thm.persistence.model.TroopArmy;
+import use.thm.persistence.model.TroopArmyVariant;
+import use.thm.persistence.model.TroopVariant;
 import use.thm.web.webservice.axis2.pojo.TileDefaulttextPojo;
 import use.thm.web.webservice.axis2.pojo.TroopArmyPojo;
 
@@ -61,6 +66,7 @@ public class TileService{
 		return sVersion;
 		
 		/*
+		 * 0.091: Einfügen eines neuen Spielsteins.
 		 * 0.090: Löschen eines Spielsteins, per UniqueName.
  		 * 0.082: Hole den zu verwendenen JNDI-String aus der Kernel-Konfiguration. (Lies überhaupt erstmalig die Kernel Koniguration per WebService aus).
 		 * 0.081: Einbau einer anderen SQLITE Version und eines anderen Dialekts, was entsprechend der SWING Applikation angepasst wurde.
@@ -451,12 +457,13 @@ public class TileService{
 				Troop objTroop = (Troop) daoTroop.searchTroopByUniquename(sUniqueName);
 				if(objTroop == null){
 					
-					sReturn = "KEIN Troop-Objekt mit dem UniqueName '" + sUniqueName + "' gefunden.";			
+					sReturn = "KEIN Troop-Objekt mit dem UniqueName '" + sUniqueName + "' gefunden.";
+					System.out.println(ReflectCodeZZZ.getPositionCurrent() + ": " + sReturn);
 					break main;
 				}			
 				sReturn = "Troop-Objekt mit dem UniqueName '" + sUniqueName + "' gefunden.";
 				System.out.println("###############################################################################");
-				System.out.println(sReturn);
+				System.out.println(ReflectCodeZZZ.getPositionCurrent() + ": " + sReturn);
 				System.out.println("###############################################################################");
 				
 				String sTroopType = objTroop.getTroopType();				
@@ -474,7 +481,98 @@ public class TileService{
 					sReturn = "NICHT erfolgreich gelöscht.";					
 				}			
 				System.out.println("###############################################################################");
-				System.out.println(sReturn);
+				System.out.println(ReflectCodeZZZ.getPositionCurrent() + ": " + sReturn);
+				System.out.println("###############################################################################");
+				
+				//Nach dem Update soll mit dem UI weitergearbeitet werden können			
+				objContextHibernate.closeAll();
+				System.out.println("SessionFactory über den HibernateContextProvider geschlossen.... Nun wieder bearbeitbar im Java Swing Client?");				
+			}//end main:
+		} catch (ExceptionZZZ e) {
+			System.out.println(e.getDetailAllLast());
+			e.printStackTrace();		
+		}
+		return sReturn;
+	}
+	
+	public String fillMapCreateNewTile(String sTroopType, long lngTroopVariant_Thiskeyid, String sMapAlias, String sX, String sY ){
+		String sReturn = null;
+		try{
+			main:{				
+				if(StringZZZ.isEmpty(sTroopType)) break main;
+				if(StringZZZ.isEmpty(sMapAlias)) break main;
+				if(StringZZZ.isEmpty(sX)) break main;
+				if(StringZZZ.isEmpty(sY)) break main;
+				
+				//HOLE DIE SESSIONFACTORY PER JNDI:
+				//Merke: DAS FUNKTIONIERT NUR, WENN DIE ANWENDUNG IN EINEM SERVER (z.B. Tomcat läuft).
+				
+				//KernelZZZ objKernel = new KernelZZZ(); //Merke: Die Service Klasse selbst kann wohl nicht das KernelObjekt extenden!				
+				//HibernateContextProviderSingletonTHM objContextHibernate = HibernateContextProviderSingletonTHM.getInstance(objKernel);					
+				
+				//String sContextJndi = "jdbc/ServicePortal";
+				
+				KernelSingletonTHM objKernelSingleton = KernelSingletonTHM.getInstance();
+				String sDatabaseRemoteNameJNDI = objKernelSingleton.getParameter("DatabaseRemoteNameJNDI");
+				
+				HibernateContextProviderJndiSingletonTHM objContextHibernate = HibernateContextProviderJndiSingletonTHM.getInstance(objKernelSingleton, sDatabaseRemoteNameJNDI);
+				objContextHibernate.getConfiguration().setProperty("hibernate.hbm2ddl.auto", "update");  //! Jetzt erst wird jede Tabelle über den Anwendungsstart hinaus gespeichert UND auch wiedergeholt.				
+				
+				//### Hole das Varianten-Objekt hier. Mit einer Factory.
+				//long lngTroopArmyVariant_Thiskeyid = 11; //"Infanterie". TODO GOON 20180311: Aus dem GhostDropEvent (via GhostpictureAdapter) die im PANEL_WEST ausgewählte Variante holen.			
+				//TroopArmyVariantDao daoKeyArmy = new TroopArmyVariantDao(objContextHibernate);
+			    //TroopArmyVariant objTroopArmyVariant = (TroopArmyVariant) daoKeyArmy.searchKey("TROOPARMYVARIANT", lngTroopArmyVariant_Thiskeyid );
+					
+				//TODO GOON 20181102:
+					TroopVariantDaoFactoryTHM objVariantDaoFactory = TroopVariantDaoFactoryTHM.getInstance(objKernelSingleton);
+					TroopVariantDao daoVariant = (TroopVariantDao) objVariantDaoFactory.createDaoVariantJndi(lngTroopVariant_Thiskeyid);
+					sReturn = "TroopVariantDao-Objekt für JNDI erstellt.";
+					
+					//TODO: Hier muss dann der "Spezialstring" aus der Klasse selbst geholt werden. 
+					TroopVariant objTroopVariant = (TroopVariant) daoVariant.searchKey("TROOPARMYVARIANT", lngTroopVariant_Thiskeyid );
+					if(objTroopVariant == null){
+						
+						sReturn = "KEIN TroopVariant-Objekt mit dem ThisKey '" + lngTroopVariant_Thiskeyid + "' gefunden.";
+						System.out.println(ReflectCodeZZZ.getPositionCurrent() + ": " + sReturn);
+						break main;
+					}			
+					sReturn = "TroopVariant-Objekt mit dem ThisKey '" + lngTroopVariant_Thiskeyid + "' gefunden.";
+					System.out.println("###############################################################################");
+					System.out.println(ReflectCodeZZZ.getPositionCurrent() + ": " + sReturn);
+					System.out.println("###############################################################################");
+					
+				
+					//Hole die Spielfeldzelle (Merke: Beim Erstellen mehrerer Spielsteine ist es performanter alle Zellen zu holen und in einer Schleife durchzugehen, als gezielt immer eine Zelle zu suchen)
+					CellId primaryKey = new CellId(sMapAlias, sX, sY);//Die vorhandenen Schlüssel Klasse
+					
+					AreaCellDao daoAreaCell = new AreaCellDao(objContextHibernate);	
+					AreaCell objCell = daoAreaCell.findByKey(primaryKey);			
+					if(objCell==null){
+						sReturn = "Zelle mit x/Y in Tabelle '" + sMapAlias + "' NICHT gefunden (" + sX + "/" + sY + ")";
+						System.out.println(ReflectCodeZZZ.getPositionCurrent() + ": " + sReturn);
+						break main;
+					}else{
+						sReturn = "Zelle mit x/Y in Tabelle '" + sMapAlias + "' gefunden (" + sX + "/" + sY + ")";
+						System.out.println(ReflectCodeZZZ.getPositionCurrent() + ": " + sReturn);						
+					}
+						
+				TileDaoFacadeFactoryTHM objDaoFacadeFactory = TileDaoFacadeFactoryTHM.getInstance(objKernelSingleton);
+				TileDaoFacade objFacade = (TileDaoFacade) objDaoFacadeFactory.createDaoFacadeJndi(sTroopType);
+				sReturn = "TileDaoFacade-Objekt für JNDI erstellt.";
+				System.out.println(ReflectCodeZZZ.getPositionCurrent() + ": " + sReturn);
+				
+				//TODO GOON 20181102: Die generelle insertTroop-Methode bereitstellen.
+				boolean bSuccess = objFacade.insertTroop(objTroopVariant, objCell);
+				if(bSuccess){
+					sReturn = "Erfolgreich eingefügt";
+				}else{
+					//TODO GOON: Nimm auch irdendwie den Grund entgegen, warum das Einfügen gescheitert ist
+					//a) Zelle voll
+					//b) Gelände ist nicht erlaubt für diesen Einheitentyp
+					sReturn = "NICHT erfolgreich eingefügt.";					
+				}			
+				System.out.println("###############################################################################");
+				System.out.println(ReflectCodeZZZ.getPositionCurrent() + ": " + sReturn);
 				System.out.println("###############################################################################");
 				
 				//Nach dem Update soll mit dem UI weitergearbeitet werden können			
