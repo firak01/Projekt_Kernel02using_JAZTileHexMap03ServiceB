@@ -37,6 +37,7 @@ import use.thm.persistence.dao.TroopArmyDao;
 import use.thm.persistence.dao.TroopArmyVariantDao;
 import use.thm.persistence.dao.TroopDao;
 import use.thm.persistence.dao.TroopVariantDao;
+import use.thm.persistence.dao.TroopVariantDaoFactory;
 import use.thm.persistence.daoFacade.TileDaoFacade;
 import use.thm.persistence.daoFacade.TileDaoFacadeFactoryTHM;
 import use.thm.persistence.hibernate.HibernateContextProviderJndiSingletonTHM;
@@ -524,12 +525,13 @@ public class TileService{
 			    //TroopArmyVariant objTroopArmyVariant = (TroopArmyVariant) daoKeyArmy.searchKey("TROOPARMYVARIANT", lngTroopArmyVariant_Thiskeyid );
 					
 				//TODO GOON 20181102:
-					TroopVariantDaoFactoryTHM objVariantDaoFactory = TroopVariantDaoFactoryTHM.getInstance(objKernelSingleton);
+					TroopVariantDaoFactory objVariantDaoFactory = TroopVariantDaoFactory.getInstance(objKernelSingleton);
 					TroopVariantDao daoVariant = (TroopVariantDao) objVariantDaoFactory.createDaoVariantJndi(lngTroopVariant_Thiskeyid);
 					sReturn = "TroopVariantDao-Objekt für JNDI erstellt.";
 					
-					//TODO: Hier muss dann der "Spezialstring" aus der Klasse selbst geholt werden. 
-					TroopVariant objTroopVariant = (TroopVariant) daoVariant.searchKey("TROOPARMYVARIANT", lngTroopVariant_Thiskeyid );
+					//Merke: Hier wird der der "Spezialstring" (KeyType) aus der Klasse selbst geholt werden. 
+					//TroopVariant objTroopVariant = (TroopVariant) daoVariant.searchKey("TROOPARMYVARIANT", lngTroopVariant_Thiskeyid );
+					TroopVariant objTroopVariant = (TroopVariant) daoVariant.searchKey(lngTroopVariant_Thiskeyid );
 					if(objTroopVariant == null){
 						
 						sReturn = "KEIN TroopVariant-Objekt mit dem ThisKey '" + lngTroopVariant_Thiskeyid + "' gefunden.";
