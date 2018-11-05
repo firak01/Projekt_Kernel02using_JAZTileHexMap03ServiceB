@@ -564,9 +564,10 @@ public class TileService{
 				System.out.println(ReflectCodeZZZ.getPositionCurrent() + ": " + sReturn);
 				
 				//TODO GOON 20181102: Die generelle insertTroop-Methode bereitstellen.
-				boolean bSuccess = objFacade.insertTroop(objTroopVariant, objCell);
-				if(bSuccess){
-					sReturn = "Erfolgreich eingefügt";
+				String sUniquename = objFacade.insert(objTroopVariant, objCell);
+				if(!StringZZZ.isEmpty(sUniquename)){
+					sReturn = "Erfolgreich eingefügt als '" + sUniquename + "'";
+					
 				}else{
 					//TODO GOON: Nimm auch irdendwie den Grund entgegen, warum das Einfügen gescheitert ist
 					//a) Zelle voll
