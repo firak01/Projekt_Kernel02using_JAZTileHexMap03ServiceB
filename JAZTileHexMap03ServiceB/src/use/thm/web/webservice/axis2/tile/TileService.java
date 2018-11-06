@@ -454,10 +454,8 @@ public class TileService{
 				
 				//### Hole das Troop-Objekt hier. 
 				TroopDao daoTroop = new TroopDao(objContextHibernate);
-				//Troop objTroop = (Troop) daoTroop.searchTileByUniquename(sUniqueName);
 				Troop objTroop = (Troop) daoTroop.searchTroopByUniquename(sUniqueName);
-				if(objTroop == null){
-					
+				if(objTroop == null){					
 					sReturn = "KEIN Troop-Objekt mit dem UniqueName '" + sUniqueName + "' gefunden.";
 					System.out.println(ReflectCodeZZZ.getPositionCurrent() + ": " + sReturn);
 					break main;
@@ -519,60 +517,57 @@ public class TileService{
 				HibernateContextProviderJndiSingletonTHM objContextHibernate = HibernateContextProviderJndiSingletonTHM.getInstance(objKernelSingleton, sDatabaseRemoteNameJNDI);
 				objContextHibernate.getConfiguration().setProperty("hibernate.hbm2ddl.auto", "update");  //! Jetzt erst wird jede Tabelle über den Anwendungsstart hinaus gespeichert UND auch wiedergeholt.				
 				
-				//### Hole das Varianten-Objekt hier. Mit einer Factory.
-				//long lngTroopArmyVariant_Thiskeyid = 11; //"Infanterie". TODO GOON 20180311: Aus dem GhostDropEvent (via GhostpictureAdapter) die im PANEL_WEST ausgewählte Variante holen.			
-				//TroopArmyVariantDao daoKeyArmy = new TroopArmyVariantDao(objContextHibernate);
-			    //TroopArmyVariant objTroopArmyVariant = (TroopArmyVariant) daoKeyArmy.searchKey("TROOPARMYVARIANT", lngTroopArmyVariant_Thiskeyid );
-					
-				//TODO GOON 20181102:
-					TroopVariantDaoFactory objVariantDaoFactory = TroopVariantDaoFactory.getInstance(objKernelSingleton);
-					TroopVariantDao daoVariant = (TroopVariantDao) objVariantDaoFactory.createDaoVariantJndi(lngTroopVariant_Thiskeyid);
-					sReturn = "TroopVariantDao-Objekt für JNDI erstellt.";
-					
-					//Merke: Hier wird der der "Spezialstring" (KeyType) aus der Klasse selbst geholt werden. 
-					//TroopVariant objTroopVariant = (TroopVariant) daoVariant.searchKey("TROOPARMYVARIANT", lngTroopVariant_Thiskeyid );
-					TroopVariant objTroopVariant = (TroopVariant) daoVariant.searchKey(lngTroopVariant_Thiskeyid );
-					if(objTroopVariant == null){
+				//### Hole das Varianten-Objekt hier. Mit einer Factory.				
+				TroopVariantDaoFactory objVariantDaoFactory = TroopVariantDaoFactory.getInstance(objKernelSingleton);
+				TroopVariantDao daoVariant = (TroopVariantDao) objVariantDaoFactory.createDaoVariantJndi(lngTroopVariant_Thiskeyid);
+				sReturn = "TroopVariantDao-Objekt für JNDI erstellt.";
+										
+				TroopVariant objTroopVariant = (TroopVariant) daoVariant.searchKey(lngTroopVariant_Thiskeyid );
+				if(objTroopVariant == null){
 						
-						sReturn = "KEIN TroopVariant-Objekt mit dem ThisKey '" + lngTroopVariant_Thiskeyid + "' gefunden.";
-						System.out.println(ReflectCodeZZZ.getPositionCurrent() + ": " + sReturn);
-						break main;
-					}			
-					sReturn = "TroopVariant-Objekt mit dem ThisKey '" + lngTroopVariant_Thiskeyid + "' gefunden.";
-					System.out.println("###############################################################################");
+					sReturn = "KEIN TroopVariant-Objekt mit dem ThisKey '" + lngTroopVariant_Thiskeyid + "' gefunden.";
 					System.out.println(ReflectCodeZZZ.getPositionCurrent() + ": " + sReturn);
-					System.out.println("###############################################################################");
+					break main;
+				}			
+				sReturn = "TroopVariant-Objekt mit dem ThisKey '" + lngTroopVariant_Thiskeyid + "' gefunden.";
+				System.out.println("###############################################################################");
+				System.out.println(ReflectCodeZZZ.getPositionCurrent() + ": " + sReturn);
+				System.out.println("###############################################################################");
 					
 				
-					//Hole die Spielfeldzelle (Merke: Beim Erstellen mehrerer Spielsteine ist es performanter alle Zellen zu holen und in einer Schleife durchzugehen, als gezielt immer eine Zelle zu suchen)
-					CellId primaryKey = new CellId(sMapAlias, sX, sY);//Die vorhandenen Schlüssel Klasse
+				//Hole die Spielfeldzelle (Merke: Beim Erstellen mehrerer Spielsteine ist es performanter alle Zellen zu holen und in einer Schleife durchzugehen, als gezielt immer eine Zelle zu suchen)
+				CellId primaryKey = new CellId(sMapAlias, sX, sY);//Die vorhandenen Schlüssel Klasse
 					
-					AreaCellDao daoAreaCell = new AreaCellDao(objContextHibernate);	
-					AreaCell objCell = daoAreaCell.findByKey(primaryKey);			
-					if(objCell==null){
-						sReturn = "Zelle mit x/Y in Tabelle '" + sMapAlias + "' NICHT gefunden (" + sX + "/" + sY + ")";
-						System.out.println(ReflectCodeZZZ.getPositionCurrent() + ": " + sReturn);
-						break main;
-					}else{
-						sReturn = "Zelle mit x/Y in Tabelle '" + sMapAlias + "' gefunden (" + sX + "/" + sY + ")";
-						System.out.println(ReflectCodeZZZ.getPositionCurrent() + ": " + sReturn);						
-					}
-						
+				AreaCellDao daoAreaCell = new AreaCellDao(objContextHibernate);	
+				AreaCell objCell = daoAreaCell.findByKey(primaryKey);			
+				if(objCell==null){
+					sReturn = "Zelle mit x/Y in Tabelle '" + sMapAlias + "' NICHT gefunden (" + sX + "/" + sY + ")";
+					System.out.println(ReflectCodeZZZ.getPositionCurrent() + ": " + sReturn);
+					break main;
+				}else{
+					sReturn = "Zelle mit x/Y in Tabelle '" + sMapAlias + "' gefunden (" + sX + "/" + sY + ")";
+					System.out.println(ReflectCodeZZZ.getPositionCurrent() + ": " + sReturn);						
+				}
+				//daoAreaCell.getSession().clear();
+				//daoAreaCell.getSession().close();
+									
 				TileDaoFacadeFactoryTHM objDaoFacadeFactory = TileDaoFacadeFactoryTHM.getInstance(objKernelSingleton);
 				TileDaoFacade objFacade = (TileDaoFacade) objDaoFacadeFactory.createDaoFacadeJndi(sTroopType);
 				sReturn = "TileDaoFacade-Objekt für JNDI erstellt.";
 				System.out.println(ReflectCodeZZZ.getPositionCurrent() + ": " + sReturn);
 				
-				//TODO GOON 20181102: Die generelle insertTroop-Methode bereitstellen.
 				String sUniquename = objFacade.insert(objTroopVariant, objCell);
 				if(!StringZZZ.isEmpty(sUniquename)){
-					sReturn = "Erfolgreich eingefügt als '" + sUniquename + "'";
-					
+					sReturn = "Erfolgreich eingefügt als '" + sUniquename + "'";					
 				}else{
-					//TODO GOON: Nimm auch irdendwie den Grund entgegen, warum das Einfügen gescheitert ist
+					//Nimm auch den Grund entgegen, warum das Einfügen gescheitert ist, z.B.:
 					//a) Zelle voll
 					//b) Gelände ist nicht erlaubt für diesen Einheitentyp
-					sReturn = "NICHT erfolgreich eingefügt.";					
+					sReturn = "NICHT erfolgreich eingefügt.";	
+					
+					//Nimm die FacadeResults entgegen. Sie enthalten die Fehlermeldung.
+					String sFacadeResult = objFacade.getFacadeResult().getMessage();					
+					sReturn = sReturn + "(" + sFacadeResult + ")";					
 				}			
 				System.out.println("###############################################################################");
 				System.out.println(ReflectCodeZZZ.getPositionCurrent() + ": " + sReturn);
