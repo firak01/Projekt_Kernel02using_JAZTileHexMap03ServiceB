@@ -28,6 +28,7 @@ import basic.persistence.daoFacade.GeneralDaoFacadeZZZ;
 import basic.zBasic.ExceptionZZZ;
 import basic.zBasic.KernelSingletonTHM;
 import basic.zBasic.ReflectCodeZZZ;
+import basic.zBasic.persistence.interfaces.IHibernateContextProviderZZZ;
 import basic.zBasic.util.datatype.string.StringZZZ;
 import basic.zKernel.KernelZZZ;
 import tryout.zBasic.persistence.webservice.TryoutSessionFactoryCreation;
@@ -50,11 +51,12 @@ import use.thm.persistence.model.Troop;
 import use.thm.persistence.model.TroopArmy;
 import use.thm.persistence.model.TroopArmyVariant;
 import use.thm.persistence.model.TroopVariant;
+import use.thm.persistence.util.HibernateUtilTHM;
 import use.thm.web.webservice.axis2.pojo.TileDefaulttextPojo;
 import use.thm.web.webservice.axis2.pojo.TroopArmyPojo;
 
 public class TileService{
-	//Das funktoiniert wohl nur, wenn diese Ressource irgendwie bekannt gemacht worden ist.
+	//Das funktioniert wohl nur, wenn diese Ressource irgendwie bekannt gemacht worden ist.
 	//@Resource
 	//private WebServiceContext context; //Das soll durch die Annotation dieses Context Objekt zur Verfügung stellen.
 	
@@ -63,10 +65,11 @@ public class TileService{
 	//String realPath = context.getRealPath("/");
 	
 	public String getVersion(){
-		String sVersion = "0.09";			
+		String sVersion = "0.10";			
 		return sVersion;
 		
 		/*
+		 * 0.100: JNDI wie Standalone verwenden. Die Differnzierung wird in einer Utility-Klasse gemacht.
 		 * 0.091: Einfügen eines neuen Spielsteins.
 		 * 0.090: Löschen eines Spielsteins, per UniqueName.
  		 * 0.082: Hole den zu verwendenen JNDI-String aus der Kernel-Konfiguration. (Lies überhaupt erstmalig die Kernel Koniguration per WebService aus).
@@ -132,11 +135,9 @@ public class TileService{
 			//ServletContext servletContext = (ServletContext) context.getMessageContext().get(MessageContext.SERVLET_CONTEXT);
 
 			//20181008: Lies die zu verwendende JNDI-Ressource aus der Kernelkoniguration aus.
-			KernelSingletonTHM objKernelSingleton = KernelSingletonTHM.getInstance();
-			String sDatabaseRemoteNameJNDI = objKernelSingleton.getParameter("DatabaseRemoteNameJNDI");
-			HibernateContextProviderJndiSingletonTHM objContextHibernate = HibernateContextProviderJndiSingletonTHM.getInstance(objKernelSingleton, sDatabaseRemoteNameJNDI);
-			
-			objContextHibernate.getConfiguration().setProperty("hibernate.hbm2ddl.auto", "update");  //! Jetzt erst wird jede Tabelle über den Anwendungsstart hinaus gespeichert UND auch wiedergeholt.				
+			KernelSingletonTHM objKernelSingleton = KernelSingletonTHM.getInstance();	
+			IHibernateContextProviderZZZ objHibernateContext = HibernateUtilTHM.getHibernateContextProviderUsed(objKernelSingleton);
+			objHibernateContext.getConfiguration().setProperty("hibernate.hbm2ddl.auto", "update");  //! Jetzt erst wird jede Tabelle über den Anwendungsstart hinaus gespeichert UND auch wiedergeholt.				
 			
 			//Dafür ist es wichtig für JNDI: Die SessionFactory an den Context zu binden
 			//objContextHibernate.getConfiguration().setProperty("hibernate.session_factory_name", "tryout.zBasic.persistence.hibernate.HibernateSessionFactoryTomcatFactory");
@@ -150,7 +151,7 @@ public class TileService{
 			//Merke: java:comp/env/ ist der JNDI "Basis" Pfad, der vorangestellt werden muss. Das ist also falsch: //SessionFactory sf = (SessionFactory) jndiContext.lookup("java:jdbc/ServicePortal");
 			//Merke: /jdbc/ServicePortal ist in der context.xml im <RessourceLink>-Tag definiert UND in der web.xml im <resource-env-ref>-Tag
 												
-			TroopArmyDao daoTroop = new TroopArmyDao(objContextHibernate);
+			TroopArmyDao daoTroop = new TroopArmyDao(objHibernateContext);
 			int iTroopCounted = daoTroop.count();
 			System.out.println("###############################################################################");
 			System.out.println("Es gibt platzierte Armeen: " + iTroopCounted);
@@ -159,7 +160,7 @@ public class TileService{
 			intReturn = new Integer(iTroopCounted);
 			
 			//Nach dem Update soll mit dem UI weitergearbeitet werden können			
-			objContextHibernate.closeAll();
+			objHibernateContext.closeAll();
 			System.out.println("SessionFactory über den HibernateContextProvider geschlossen.... Nun wieder bearbeitbar im Java Swing Client?");			
 		} catch (ExceptionZZZ e) {
 			System.out.println(e.getDetailAllLast());
@@ -176,17 +177,9 @@ public class TileService{
 		try {
 			//HOLE DIE SESSIONFACTORY PER JNDI:
 			//Merke: DAS FUNKTIONIERT NUR, WENN DIE ANWENDUNG IN EINEM SERVER (z.B. Tomcat läuft).
-			
-//			KernelZZZ objKernel = new KernelZZZ(); //Merke: Die Service Klasse selbst kann wohl nicht das KernelObjekt extenden!			
-			//HibernateContextProviderSingletonTHM objContextHibernate = HibernateContextProviderSingletonTHM.getInstance(objKernel);
-//			String sContextJndi = "jdbc/ServicePortal";
-//			HibernateContextProviderJndiSingletonTHM objContextHibernate = HibernateContextProviderJndiSingletonTHM.getInstance(objKernel, sContextJndi);
-			
-			KernelSingletonTHM objKernelSingleton = KernelSingletonTHM.getInstance();
-			String sDatabaseRemoteNameJNDI = objKernelSingleton.getParameter("DatabaseRemoteNameJNDI");
-			HibernateContextProviderJndiSingletonTHM objContextHibernate = HibernateContextProviderJndiSingletonTHM.getInstance(objKernelSingleton, sDatabaseRemoteNameJNDI);
-			
-			objContextHibernate.getConfiguration().setProperty("hibernate.hbm2ddl.auto", "update");  //! Jetzt erst wird jede Tabelle über den Anwendungsstart hinaus gespeichert UND auch wiedergeholt.				
+			KernelSingletonTHM objKernelSingleton = KernelSingletonTHM.getInstance();	
+			IHibernateContextProviderZZZ objHibernateContext = HibernateUtilTHM.getHibernateContextProviderUsed(objKernelSingleton);
+			objHibernateContext.getConfiguration().setProperty("hibernate.hbm2ddl.auto", "update");  //! Jetzt erst wird jede Tabelle über den Anwendungsstart hinaus gespeichert UND auch wiedergeholt.				
 			
 			//############################
 			//MERKE: DAS IST DER WEG wei bisher die SessionFactory direkt in einer Standalone J2SE Anwendung geholt wird
@@ -220,9 +213,9 @@ public class TileService{
 			//SessionFactory sf = (SessionFactory) jndiContext.lookup("java:comp/env/jdbc/ServicePortal");
 			
 			//Hole die SessionFactory für JNDI aus dem ContextProvider Objekt.
-			SessionFactory sf = (SessionFactory) objContextHibernate.getSessionFactoryByJndi();
+			//SessionFactory sf = (SessionFactory) objHibernateContext.getSessionFactory(); //ByJndi();
 						
-			TroopArmyDao daoTroop = new TroopArmyDao(objContextHibernate);
+			TroopArmyDao daoTroop = new TroopArmyDao(objHibernateContext);
 			List<TroopArmy>listTroopArmy = daoTroop.searchTileCollectionByHexCell(sMap, sX, sY);//.searchTileIdCollectionByHexCell(sMap, sX, sY);
 			
 			System.out.println("###############################################################################");
@@ -246,7 +239,7 @@ public class TileService{
 			}	
 			
 			//Nach dem Update soll mit dem UI weitergearbeitet werden können			
-			objContextHibernate.closeAll();
+			objHibernateContext.closeAll();
 			System.out.println("SessionFactory über den HibernateContextProvider geschlossen.... Nun wieder bearbeitbar im Java Swing Client?");
 		} catch (ExceptionZZZ e){
 			System.out.println(e.getDetailAllLast());
@@ -263,17 +256,9 @@ public class TileService{
 		try {
 			//HOLE DIE SESSIONFACTORY PER JNDI:
 			//Merke: DAS FUNKTIONIERT NUR, WENN DIE ANWENDUNG IN EINEM SERVER (z.B. Tomcat läuft).
-			
-			//KernelZZZ objKernel = new KernelZZZ(); //Merke: Die Service Klasse selbst kann wohl nicht das KernelObjekt extenden!			
-			//HibernateContextProviderSingletonTHM objContextHibernate = HibernateContextProviderSingletonTHM.getInstance(objKernel);
-			//String sContextJndi = "jdbc/ServicePortal";
-			//HibernateContextProviderJndiSingletonTHM objContextHibernate = HibernateContextProviderJndiSingletonTHM.getInstance(objKernel, sContextJndi);
-			
-			KernelSingletonTHM objKernelSingleton = KernelSingletonTHM.getInstance();
-			String sDatabaseRemoteNameJNDI = objKernelSingleton.getParameter("DatabaseRemoteNameJNDI");
-						
-			HibernateContextProviderJndiSingletonTHM objContextHibernate = HibernateContextProviderJndiSingletonTHM.getInstance(objKernelSingleton, sDatabaseRemoteNameJNDI);
-			objContextHibernate.getConfiguration().setProperty("hibernate.hbm2ddl.auto", "update");  //! Jetzt erst wird jede Tabelle über den Anwendungsstart hinaus gespeichert UND auch wiedergeholt.				
+			KernelSingletonTHM objKernelSingleton = KernelSingletonTHM.getInstance();	
+			IHibernateContextProviderZZZ objHibernateContext = HibernateUtilTHM.getHibernateContextProviderUsed(objKernelSingleton);
+			objHibernateContext.getConfiguration().setProperty("hibernate.hbm2ddl.auto", "update");  //! Jetzt erst wird jede Tabelle über den Anwendungsstart hinaus gespeichert UND auch wiedergeholt.				
 			
 			//############################
 			//MERKE: DAS IST DER WEG wei bisher die SessionFactory direkt in einer Standalone J2SE Anwendung geholt wird
@@ -307,9 +292,9 @@ public class TileService{
 			//SessionFactory sf = (SessionFactory) jndiContext.lookup("java:comp/env/jdbc/ServicePortal");
 			
 			//Hole die SessionFactory für JNDI aus dem ContextProvider Objekt.
-			SessionFactory sf = (SessionFactory) objContextHibernate.getSessionFactoryByJndi();
+			//SessionFactory sf = (SessionFactory) objHibernateContext.getSessionFactory(); //ByJndi();
 						
-			TroopArmyDao daoTroop = new TroopArmyDao(objContextHibernate);
+			TroopArmyDao daoTroop = new TroopArmyDao(objHibernateContext);
 			List<TroopArmy>listTroopArmy = daoTroop.searchTroopArmiesAll(sMap);			
 			if(listTroopArmy.size()>=1){
 				System.out.println("###############################################################################");
@@ -332,7 +317,7 @@ public class TileService{
 			}
 			
 			//Nach dem Update soll mit dem UI weitergearbeitet werden können			
-			objContextHibernate.closeAll();
+			objHibernateContext.closeAll();
 			System.out.println("SessionFactory über den HibernateContextProvider geschlossen.... Nun wieder bearbeitbar im Java Swing Client?");
 		} catch (ExceptionZZZ e){
 			System.out.println(e.getDetailAllLast());
@@ -350,17 +335,9 @@ public class TileService{
 		try {
 			//HOLE DIE SESSIONFACTORY PER JNDI:
 			//Merke: DAS FUNKTIONIERT NUR, WENN DIE ANWENDUNG IN EINEM SERVER (z.B. Tomcat läuft).
-			
-			//KernelZZZ objKernel = new KernelZZZ(); //Merke: Die Service Klasse selbst kann wohl nicht das KernelObjekt extenden!				
-			//HibernateContextProviderSingletonTHM objContextHibernate = HibernateContextProviderSingletonTHM.getInstance(objKernel);					
-			
-			//String sContextJndi = "jdbc/ServicePortal";
-			
-			KernelSingletonTHM objKernelSingleton = KernelSingletonTHM.getInstance();
-			String sDatabaseRemoteNameJNDI = objKernelSingleton.getParameter("DatabaseRemoteNameJNDI");
-			
-			HibernateContextProviderJndiSingletonTHM objContextHibernate = HibernateContextProviderJndiSingletonTHM.getInstance(objKernelSingleton, sDatabaseRemoteNameJNDI);
-			objContextHibernate.getConfiguration().setProperty("hibernate.hbm2ddl.auto", "update");  //! Jetzt erst wird jede Tabelle über den Anwendungsstart hinaus gespeichert UND auch wiedergeholt.				
+			KernelSingletonTHM objKernelSingleton = KernelSingletonTHM.getInstance();	
+			IHibernateContextProviderZZZ objHibernateContext = HibernateUtilTHM.getHibernateContextProviderUsed(objKernelSingleton);			
+			objHibernateContext.getConfiguration().setProperty("hibernate.hbm2ddl.auto", "update");  //! Jetzt erst wird jede Tabelle über den Anwendungsstart hinaus gespeichert UND auch wiedergeholt.				
 			
 			//############################
 			//MERKE: DAS IST DER WEG wei bisher die SessionFactory direkt in einer Standalone J2SE Anwendung geholt wird
@@ -394,9 +371,10 @@ public class TileService{
 			//SessionFactory sf = (SessionFactory) jndiContext.lookup("java:comp/env/jdbc/ServicePortal");
 			
 			//Hole die SessionFactory für JNDI aus dem ContextProvider Objekt.
-			SessionFactory sf = (SessionFactory) objContextHibernate.getSessionFactoryByJndi();
+			//SessionFactory sf = (SessionFactory) objHibernateContext.getSessionFactoryByJndi();
+			//SessionFactory sf = (SessionFactory) objHibernateContext.getSessionFactory();
 							
-			TileDefaulttextDao daoText = new TileDefaulttextDao(objContextHibernate);
+			TileDefaulttextDao daoText = new TileDefaulttextDao(objHibernateContext);
 			Key objKey = daoText.searchThiskey(lngThiskey);
 			if(objKey==null){
 				System.out.println("###############################################################################");
@@ -422,7 +400,7 @@ public class TileService{
 			}	
 			
 			//Nach dem Update soll mit dem UI weitergearbeitet werden können			
-			objContextHibernate.closeAll();
+			objHibernateContext.closeAll();
 			System.out.println("SessionFactory über den HibernateContextProvider geschlossen.... Nun wieder bearbeitbar im Java Swing Client?");
 		} catch (ExceptionZZZ e) {
 			System.out.println(e.getDetailAllLast());
@@ -439,21 +417,13 @@ public class TileService{
 				if(StringZZZ.isEmpty(sUniqueName)) break main;
 				
 				//HOLE DIE SESSIONFACTORY PER JNDI:
-				//Merke: DAS FUNKTIONIERT NUR, WENN DIE ANWENDUNG IN EINEM SERVER (z.B. Tomcat läuft).
-				
-				//KernelZZZ objKernel = new KernelZZZ(); //Merke: Die Service Klasse selbst kann wohl nicht das KernelObjekt extenden!				
-				//HibernateContextProviderSingletonTHM objContextHibernate = HibernateContextProviderSingletonTHM.getInstance(objKernel);					
-				
-				//String sContextJndi = "jdbc/ServicePortal";
-				
+				//Merke: DAS FUNKTIONIERT NUR, WENN DIE ANWENDUNG IN EINEM SERVER (z.B. Tomcat läuft).	
 				KernelSingletonTHM objKernelSingleton = KernelSingletonTHM.getInstance();
-				String sDatabaseRemoteNameJNDI = objKernelSingleton.getParameter("DatabaseRemoteNameJNDI");
-				
-				HibernateContextProviderJndiSingletonTHM objContextHibernate = HibernateContextProviderJndiSingletonTHM.getInstance(objKernelSingleton, sDatabaseRemoteNameJNDI);
-				objContextHibernate.getConfiguration().setProperty("hibernate.hbm2ddl.auto", "update");  //! Jetzt erst wird jede Tabelle über den Anwendungsstart hinaus gespeichert UND auch wiedergeholt.				
+				IHibernateContextProviderZZZ objHibernateContext = HibernateUtilTHM.getHibernateContextProviderUsed(objKernelSingleton);
+				objHibernateContext.getConfiguration().setProperty("hibernate.hbm2ddl.auto", "update");  //! Jetzt erst wird jede Tabelle über den Anwendungsstart hinaus gespeichert UND auch wiedergeholt.				
 				
 				//### Hole das Troop-Objekt hier. 
-				TroopDao daoTroop = new TroopDao(objContextHibernate);
+				TroopDao daoTroop = new TroopDao(objHibernateContext);
 				Troop objTroop = (Troop) daoTroop.searchTroopByUniquename(sUniqueName);
 				if(objTroop == null){					
 					sReturn = "KEIN Troop-Objekt mit dem UniqueName '" + sUniqueName + "' gefunden.";
@@ -468,9 +438,8 @@ public class TileService{
 				String sTroopType = objTroop.getTroopType();				
 				sReturn = "Troop-Objekt mit dem UniqueName '" + sUniqueName + "' hat den TroopType='"+ sTroopType +"'.";
 				
-				
 				TileDaoFacadeFactoryTHM objDaoFacadeFactory = TileDaoFacadeFactoryTHM.getInstance(objKernelSingleton);
-				TileDaoFacade objFacade = (TileDaoFacade) objDaoFacadeFactory.createDaoFacadeJndi(objTroop);
+				TileDaoFacade objFacade = (TileDaoFacade) objDaoFacadeFactory.createDaoFacade(objTroop);
 				sReturn = "TileDaoFacade-Objekt für JNDI erstellt.";
 				
 				boolean bSuccess = objFacade.delete(objTroop);
@@ -484,7 +453,7 @@ public class TileService{
 				System.out.println("###############################################################################");
 				
 				//Nach dem Update soll mit dem UI weitergearbeitet werden können			
-				objContextHibernate.closeAll();
+				objHibernateContext.closeAll();
 				System.out.println("SessionFactory über den HibernateContextProvider geschlossen.... Nun wieder bearbeitbar im Java Swing Client?");				
 			}//end main:
 		} catch (ExceptionZZZ e) {
@@ -505,21 +474,14 @@ public class TileService{
 				
 				//HOLE DIE SESSIONFACTORY PER JNDI:
 				//Merke: DAS FUNKTIONIERT NUR, WENN DIE ANWENDUNG IN EINEM SERVER (z.B. Tomcat läuft).
-				
-				//KernelZZZ objKernel = new KernelZZZ(); //Merke: Die Service Klasse selbst kann wohl nicht das KernelObjekt extenden!				
-				//HibernateContextProviderSingletonTHM objContextHibernate = HibernateContextProviderSingletonTHM.getInstance(objKernel);					
-				
-				//String sContextJndi = "jdbc/ServicePortal";
-				
-				KernelSingletonTHM objKernelSingleton = KernelSingletonTHM.getInstance();
-				String sDatabaseRemoteNameJNDI = objKernelSingleton.getParameter("DatabaseRemoteNameJNDI");
-				
-				HibernateContextProviderJndiSingletonTHM objContextHibernate = HibernateContextProviderJndiSingletonTHM.getInstance(objKernelSingleton, sDatabaseRemoteNameJNDI);
-				objContextHibernate.getConfiguration().setProperty("hibernate.hbm2ddl.auto", "update");  //! Jetzt erst wird jede Tabelle über den Anwendungsstart hinaus gespeichert UND auch wiedergeholt.				
+				KernelSingletonTHM objKernelSingleton = KernelSingletonTHM.getInstance();	
+				IHibernateContextProviderZZZ objHibernateContext = HibernateUtilTHM.getHibernateContextProviderUsed(objKernelSingleton);
+				objHibernateContext.getConfiguration().setProperty("hibernate.hbm2ddl.auto", "update");  //! Jetzt erst wird jede Tabelle über den Anwendungsstart hinaus gespeichert UND auch wiedergeholt.				
 				
 				//### Hole das Varianten-Objekt hier. Mit einer Factory.				
 				TroopVariantDaoFactory objVariantDaoFactory = TroopVariantDaoFactory.getInstance(objKernelSingleton);
-				TroopVariantDao daoVariant = (TroopVariantDao) objVariantDaoFactory.createDaoVariantJndi(lngTroopVariant_Thiskeyid);
+				//TroopVariantDao daoVariant = (TroopVariantDao) objVariantDaoFactory.createDaoVariantJndi(lngTroopVariant_Thiskeyid);
+				TroopVariantDao daoVariant = (TroopVariantDao) objVariantDaoFactory.createDaoVariant(lngTroopVariant_Thiskeyid);
 				sReturn = "TroopVariantDao-Objekt für JNDI erstellt.";
 										
 				TroopVariant objTroopVariant = (TroopVariant) daoVariant.searchKey(lngTroopVariant_Thiskeyid );
@@ -538,7 +500,7 @@ public class TileService{
 				//Hole die Spielfeldzelle (Merke: Beim Erstellen mehrerer Spielsteine ist es performanter alle Zellen zu holen und in einer Schleife durchzugehen, als gezielt immer eine Zelle zu suchen)
 				CellId primaryKey = new CellId(sMapAlias, sX, sY);//Die vorhandenen Schlüssel Klasse
 					
-				AreaCellDao daoAreaCell = new AreaCellDao(objContextHibernate);	
+				AreaCellDao daoAreaCell = new AreaCellDao(objHibernateContext);	
 				AreaCell objCell = daoAreaCell.findByKey(primaryKey);			
 				if(objCell==null){
 					sReturn = "Zelle mit x/Y in Tabelle '" + sMapAlias + "' NICHT gefunden (" + sX + "/" + sY + ")";
@@ -552,7 +514,8 @@ public class TileService{
 				//daoAreaCell.getSession().close();
 									
 				TileDaoFacadeFactoryTHM objDaoFacadeFactory = TileDaoFacadeFactoryTHM.getInstance(objKernelSingleton);
-				TileDaoFacade objFacade = (TileDaoFacade) objDaoFacadeFactory.createDaoFacadeJndi(sTroopType);
+				//TileDaoFacade objFacade = (TileDaoFacade) objDaoFacadeFactory.createDaoFacadeJndi(sTroopType);
+				TileDaoFacade objFacade = (TileDaoFacade) objDaoFacadeFactory.createDaoFacade(sTroopType);
 				sReturn = "TileDaoFacade-Objekt für JNDI erstellt.";
 				System.out.println(ReflectCodeZZZ.getPositionCurrent() + ": " + sReturn);
 				
@@ -574,7 +537,7 @@ public class TileService{
 				System.out.println("###############################################################################");
 				
 				//Nach dem Update soll mit dem UI weitergearbeitet werden können			
-				objContextHibernate.closeAll();
+				objHibernateContext.closeAll();
 				System.out.println("SessionFactory über den HibernateContextProvider geschlossen.... Nun wieder bearbeitbar im Java Swing Client?");				
 			}//end main:
 		} catch (ExceptionZZZ e) {

@@ -62,6 +62,15 @@
         <dependent-module archiveName="hibernate4-sqlite-dialect-0.1.2.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/ZKernelFileCollection/sqlite3231/hibernate4-sqlite-dialect-0.1.2.jar">
             <dependency-type>uses</dependency-type>
         </dependent-module>
+        <dependent-module archiveName="c3p0-0.9.2.1.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/ZKernelFileCollection/hibernate/hibernate-release-4.2.4.Final/lib/optional/c3p0/c3p0-0.9.2.1.jar">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="mchange-commons-java-0.2.3.4.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/ZKernelFileCollection/hibernate/hibernate-release-4.2.4.Final/lib/optional/c3p0/mchange-commons-java-0.2.3.4.jar">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="hibernate-c3p0-4.2.4.Final.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/ZKernelFileCollection/hibernate/hibernate-release-4.2.4.Final/lib/optional/c3p0/hibernate-c3p0-4.2.4.Final.jar">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
         <property name="context-root" value="JAZTileHexMap03ServiceB"/>
         <property name="java-output-path" value="/JAZTileHexMap03ServiceB/build/classes"/>
     </wb-module>
