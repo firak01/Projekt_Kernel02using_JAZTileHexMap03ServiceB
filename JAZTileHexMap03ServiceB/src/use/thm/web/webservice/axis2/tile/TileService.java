@@ -37,6 +37,7 @@ import use.thm.persistence.dao.TileDefaulttextDao;
 import use.thm.persistence.dao.TroopArmyDao;
 import use.thm.persistence.dao.TroopArmyVariantDao;
 import use.thm.persistence.dao.TroopDao;
+import use.thm.persistence.dao.TroopFleetDao;
 import use.thm.persistence.dao.TroopVariantDao;
 import use.thm.persistence.dao.TroopVariantDaoFactory;
 import use.thm.persistence.daoFacade.TileDaoFacade;
@@ -50,10 +51,12 @@ import use.thm.persistence.model.TileDefaulttext;
 import use.thm.persistence.model.Troop;
 import use.thm.persistence.model.TroopArmy;
 import use.thm.persistence.model.TroopArmyVariant;
+import use.thm.persistence.model.TroopFleet;
 import use.thm.persistence.model.TroopVariant;
 import use.thm.persistence.util.HibernateUtilTHM;
 import use.thm.web.webservice.axis2.pojo.TileDefaulttextPojo;
 import use.thm.web.webservice.axis2.pojo.TroopArmyPojo;
+import use.thm.web.webservice.axis2.pojo.TroopFleetPojo;
 
 public class TileService{
 	//Das funktioniert wohl nur, wenn diese Ressource irgendwie bekannt gemacht worden ist.
@@ -326,6 +329,84 @@ public class TileService{
 		return listReturn;	
 	}
 	
+	/* Hier wird dann erstmalig eine eigens dafür erstellte HQL Abfrage ausgeführt und das Ergebnis soll zurückgeliefert werden.
+	 * MERKE: Der hier vergebenen Variablennamen ist dann der Name der Methode in der Input-Klasse des Webservice. Bei der Entwicklung des WebServiceClients.
+	 *        z.B. sMap ==>  getTroopArmiesAll10.setSMap("EINS"); */
+	public List<TroopFleetPojo> getTroopFleetsAll(String sMap){ //TODO: Irgendeine Sortierung als Parameter vorgeben...{
+		List<TroopFleetPojo> listReturn = null;	
+		try {
+			//HOLE DIE SESSIONFACTORY PER JNDI:
+			//Merke: DAS FUNKTIONIERT NUR, WENN DIE ANWENDUNG IN EINEM SERVER (z.B. Tomcat läuft).
+			KernelSingletonTHM objKernelSingleton = KernelSingletonTHM.getInstance();	
+			IHibernateContextProviderZZZ objHibernateContext = HibernateUtilTHM.getHibernateContextProviderUsed(objKernelSingleton);
+			objHibernateContext.getConfiguration().setProperty("hibernate.hbm2ddl.auto", "update");  //! Jetzt erst wird jede Tabelle über den Anwendungsstart hinaus gespeichert UND auch wiedergeholt.				
+			
+			//############################
+			//MERKE: DAS IST DER WEG wei bisher die SessionFactory direkt in einer Standalone J2SE Anwendung geholt wird
+			//ServiceRegistry sr = new ServiceRegistryBuilder().applySettings(cfg.getProperties()).buildServiceRegistry();		    
+		    //SessionFactory sf = cfg.buildSessionFactory(sr);
+			//################################
+		
+			//xxxx Da wird mit normalen JDBC Datenbanenk als DataSource gearbeitet. Das ist mit Hibernate so nicht möglich
+			//holds config elements
+			//DataSource ds = (DataSource)ctx.lookup("java:comp/env/jdbc/yourdb");
+			//Connection conn = ds.getConnection();
+										
+			//### Ansatz Session-Factory über die Utility Funktion zu holen, die dann in der Hibernate Konfiguration nachsieht.
+			//1. Versuch: In der Hibernate Configuration definiert
+			//    Fehler: SessionFactory creation failed! javax.naming.NoInitialContextException: Need to specify class name in environment or system property, or as an applet parameter, or in an application resource file:  java.naming.factory.initial
+			
+			//2. Versuch: In der Hibernate Configuration Erstellung per Java definiert
+			//Die hier genannte SessionFactory muss tatsächlich als Klasse an der Stelle existieren.
+										
+			//3. Versuch:				
+			//Betzemeier Original:  //SessionFactory sf = HibernateUtilByAnnotation.getHibernateUtil().getSessionFactory();
+			//Betzemeier Original:  Hier wird JNDI für eine fest vorgegebeen Klasse verwendet. //SessionFactory sf = (SessionFactory) jndiContext.lookup("hibernate.session-factory.ServicePortal");
+			
+			//Mein Ansatz: Verwende eine eigene SessionFactory und nimm die erstellte Konfiguration (aus HibernateContextProviderTHM) weiterhin und überschreibe diese ggfs. aus der Konfiguration.
+			//Merke: Damit diese Resource bekannt ist im Web Service, muss er neu gebaut werden. Nur dann ist die web.xml aktuell genug.
+			//Merke: java:comp/env/ ist der JNDI "Basis" Pfad, der vorangestellt werden muss. Das ist also falsch: //SessionFactory sf = (SessionFactory) jndiContext.lookup("java:jdbc/ServicePortal");
+			//Merke: /jdbc/ServicePortal ist in der context.xml im <RessourceLink>-Tag definiert UND in der web.xml im <resource-env-ref>-Tag
+			
+			//Wenn man die SessionFactory direkt per JNDI holt...
+			//Context jndiContext = (Context) new InitialContext();
+			//SessionFactory sf = (SessionFactory) jndiContext.lookup("java:comp/env/jdbc/ServicePortal");
+			
+			//Hole die SessionFactory für JNDI aus dem ContextProvider Objekt.
+			//SessionFactory sf = (SessionFactory) objHibernateContext.getSessionFactory(); //ByJndi();
+						
+			TroopFleetDao daoTroop = new TroopFleetDao(objHibernateContext);
+			List<TroopFleet>listTroopFleet = daoTroop.searchTroopFleetsAll(sMap);			
+			if(listTroopFleet.size()>=1){
+				System.out.println("###############################################################################");
+				System.out.println("Es gibt auf der Karte '" + sMap + " platzierte Flotten: " + listTroopFleet.size());
+				System.out.println("###############################################################################");
+				listReturn = new ArrayList<TroopFleetPojo>();
+			}
+			for(TroopFleet objTroop : listTroopFleet){
+				TroopFleetPojo objPojo = new TroopFleetPojo();
+				objPojo.setUniquename(objTroop.getUniquename());
+				objPojo.setPlayer(new Integer(objTroop.getPlayer()));
+				objPojo.setType(objTroop.getTroopType());
+				
+				objPojo.setMapAlias(sMap);
+							
+				objPojo.setMapX(new Integer(objTroop.getMapX()));
+				objPojo.setMapY(new Integer(objTroop.getMapY()));
+				
+				listReturn.add(objPojo);
+			}
+			
+			//Nach dem Update soll mit dem UI weitergearbeitet werden können			
+			objHibernateContext.closeAll();
+			System.out.println("SessionFactory über den HibernateContextProvider geschlossen.... Nun wieder bearbeitbar im Java Swing Client?");
+		} catch (ExceptionZZZ e){
+			System.out.println(e.getDetailAllLast());
+			e.printStackTrace();
+		}
+		return listReturn;	
+	}
+	
 	
 	/* Hier wird per DAO der Defaulttext für eine Army geholt. Dabei wird der (momentan noch) der Thiskey direkt angegeben.
 	 * TODO GOON 20171115: Das soll eigentlich über eine noch zu erstellende Armeetyp - Tabelle passieren, in welcher der thiskey abgelegt ist.
@@ -437,10 +518,12 @@ public class TileService{
 				
 				String sTroopType = objTroop.getTroopType();				
 				sReturn = "Troop-Objekt mit dem UniqueName '" + sUniqueName + "' hat den TroopType='"+ sTroopType +"'.";
+				System.out.println(ReflectCodeZZZ.getPositionCurrent() + ": " + sReturn);
 				
 				TileDaoFacadeFactoryTHM objDaoFacadeFactory = TileDaoFacadeFactoryTHM.getInstance(objKernelSingleton);
 				TileDaoFacade objFacade = (TileDaoFacade) objDaoFacadeFactory.createDaoFacade(objTroop);
 				sReturn = "TileDaoFacade-Objekt für JNDI erstellt.";
+				System.out.println(ReflectCodeZZZ.getPositionCurrent() + ": " + sReturn);
 				
 				boolean bSuccess = objFacade.delete(objTroop);
 				if(bSuccess){
@@ -483,7 +566,8 @@ public class TileService{
 				//TroopVariantDao daoVariant = (TroopVariantDao) objVariantDaoFactory.createDaoVariantJndi(lngTroopVariant_Thiskeyid);
 				TroopVariantDao daoVariant = (TroopVariantDao) objVariantDaoFactory.createDaoVariant(lngTroopVariant_Thiskeyid);
 				sReturn = "TroopVariantDao-Objekt für JNDI erstellt.";
-										
+				System.out.println(ReflectCodeZZZ.getPositionCurrent() + ": " + sReturn);
+				
 				TroopVariant objTroopVariant = (TroopVariant) daoVariant.searchKey(lngTroopVariant_Thiskeyid );
 				if(objTroopVariant == null){
 						
