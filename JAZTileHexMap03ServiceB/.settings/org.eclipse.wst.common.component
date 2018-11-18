@@ -71,6 +71,15 @@
         <dependent-module archiveName="hibernate-c3p0-4.2.4.Final.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/ZKernelFileCollection/hibernate/hibernate-release-4.2.4.Final/lib/optional/c3p0/hibernate-c3p0-4.2.4.Final.jar">
             <dependency-type>uses</dependency-type>
         </dependent-module>
+        <dependent-module archiveName="slf4j-api-1.6.1.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/ZKernelFileCollection/slf4j/slf4j-api-1.6.1.jar">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="log4j-1.2.14.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/ZKernelFileCollection/log4j/log4j-1.2.14.jar">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="slf4j-log4j12-1.6.1.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/ZKernelFileCollection/slf4j/slf4j-log4j12-1.6.1.jar">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
         <property name="context-root" value="JAZTileHexMap03ServiceB"/>
         <property name="java-output-path" value="/JAZTileHexMap03ServiceB/build/classes"/>
     </wb-module>
