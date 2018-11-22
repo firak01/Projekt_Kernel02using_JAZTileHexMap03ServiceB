@@ -562,15 +562,13 @@ public class TileService{
 				objHibernateContext.getConfiguration().setProperty("hibernate.hbm2ddl.auto", "update");  //! Jetzt erst wird jede Tabelle über den Anwendungsstart hinaus gespeichert UND auch wiedergeholt.				
 				
 				//### Hole das Varianten-Objekt hier. Mit einer Factory.				
-				TroopVariantDaoFactory objVariantDaoFactory = TroopVariantDaoFactory.getInstance(objKernelSingleton);
-				//TroopVariantDao daoVariant = (TroopVariantDao) objVariantDaoFactory.createDaoVariantJndi(lngTroopVariant_Thiskeyid);
+				TroopVariantDaoFactory objVariantDaoFactory = TroopVariantDaoFactory.getInstance(objKernelSingleton);				
 				TroopVariantDao daoVariant = (TroopVariantDao) objVariantDaoFactory.createDaoVariant(lngTroopVariant_Thiskeyid);
 				sReturn = "TroopVariantDao-Objekt für JNDI erstellt.";
 				System.out.println(ReflectCodeZZZ.getPositionCurrent() + ": " + sReturn);
 				
 				TroopVariant objTroopVariant = (TroopVariant) daoVariant.searchKey(lngTroopVariant_Thiskeyid );
-				if(objTroopVariant == null){
-						
+				if(objTroopVariant == null){					
 					sReturn = "KEIN TroopVariant-Objekt mit dem ThisKey '" + lngTroopVariant_Thiskeyid + "' gefunden.";
 					System.out.println(ReflectCodeZZZ.getPositionCurrent() + ": " + sReturn);
 					break main;
