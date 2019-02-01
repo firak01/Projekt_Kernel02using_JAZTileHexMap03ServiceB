@@ -3,11 +3,19 @@
 /build/
 
 #Im WebService Projekt WebContent generell erlauben.
-#/WebContent/
+!/WebContent/
 
 # Auch ggfs. im WebService gebaute .class Dateien ausschliessen. In beliebigem Unterverzeichnis.
-/WebContent/WEB-INF/services/**/*.class
+#With version 1.8.2 of git, you can also use the ** wildcard to match any level of subdirectories:
+#/WebContent/WEB-INF/services/**/*.class
+#JAZTileHexMap03ServiceB/WebContent/WEB-INF/services/TileService/use/thm/web/webservice/axis2/tile/TileService.class
+#*/WebContent/WEB-INF/services/*/*/*/*/*/*.class
+#*/WebContent/WEB-INF/services/*/*/*/*/*/*/*.class
+#*/WebContent/WEB-INF/services/*/*/*/*/*/*/*/*.class
+#*/WebContent/WEB-INF/services/*/*/*/*/*/*/*/*/*.class
 
 #Überall ggfs. anfallende Log Dateien ausschliessen
 *.log
 *.log.*
+#Überall ggfs. anfallende class Dateien ausschliessen
+*.class
